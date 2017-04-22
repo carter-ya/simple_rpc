@@ -64,5 +64,6 @@ public class SimpleChannelPoolFactory implements IChannelPoolFactory {
                                 inetSocketAddress.getAddress().getHostAddress(),
                                 inetSocketAddress.getPort()));
         Optional.of(CACHED_EVENT_LOOP_GROUP.get(pooledObject.getObject())).ifPresent(eventLoopGroup -> eventLoopGroup.shutdownGracefully());
+        CACHED_EVENT_LOOP_GROUP.remove(pooledObject.getObject());
     }
 }
