@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rpc-server>
+    <server name="rpc_service" host="localhost" port="9091" />
+    <services>
+        <service class="" />
+    </services>
+    <interceptros>
+
+    </interceptros>
+</rpc-server>

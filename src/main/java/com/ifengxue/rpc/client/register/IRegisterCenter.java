@@ -1,5 +1,7 @@
 package com.ifengxue.rpc.client.register;
 
+import org.dom4j.Element;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -24,6 +26,12 @@ public interface IRegisterCenter {
      * @throws NoSuchElementException
      */
     List<ServiceNode> listAvailableServiceNode(String serviceNodeName) throws NoSuchElementException;
+
+    /**
+     * 初始化注册中心
+     * @param registerCenterElement 注册中心配置节点
+     */
+    void init(Element registerCenterElement);
     /** 服务节点 */
     class ServiceNode {
         /** 节点名称 */

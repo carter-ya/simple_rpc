@@ -26,8 +26,8 @@ public class RequestProtocolEncoder extends MessageToByteEncoder<RequestProtocol
             buffer = compressTypeEnum.getCompress().compress(buffer);
             isCompress = true;
         }
-        int totalCount = ProtocolConsts.PROTOCOL_PACKAGE_HEADER_LENGTH + buffer.length;
-        out.writeInt(totalCount);
+        int totalLength = ProtocolConsts.PROTOCOL_PACKAGE_HEADER_LENGTH + buffer.length;
+        out.writeInt(totalLength);
         out.writeByte(ProtocolConsts.VERSION);
         out.writeByte(msg.getRequestProtocolTypeEnum().getType());
         out.writeByte(isCompress ? compressTypeEnum.getType() : CompressTypeEnum.UNCOMPRESS.getType());

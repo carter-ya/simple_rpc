@@ -16,20 +16,17 @@ import java.util.Map;
  */
 public class SimpleServiceProvider implements IServiceProvider {
     private final Map<String, Object> allServiceMap;
-    public SimpleServiceProvider(String file) {
+    public SimpleServiceProvider(List<String> classNameList) {
         allServiceMap = new HashMap<>();
         try {
-            List<String> lines = Files.readAllLines(new File(file).toPath());
-            for (String line : lines) {
-                Class<?> clazz = Class.forName(line);
+            for (String className : classNameList) {
+                Class<?> clazz = Class.forName(className);
                 RpcService[] rpcServices = clazz.getAnnotationsByType(RpcService.class);
                 Object clazzObject = clazz.newInstance();
                 for (RpcService rpcService : rpcServices) {
                     allServiceMap.put(rpcService.value().getName(), clazzObject);
                 }
             }
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
         } catch (IllegalAccessException e) {

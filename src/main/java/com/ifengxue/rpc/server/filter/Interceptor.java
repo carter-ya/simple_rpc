@@ -1,6 +1,5 @@
 package com.ifengxue.rpc.server.filter;
 
-import com.ifengxue.rpc.protocol.RequestContext;
 import com.ifengxue.rpc.protocol.ResponseContext;
 
 /**

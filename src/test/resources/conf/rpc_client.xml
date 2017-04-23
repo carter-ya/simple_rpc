@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rpc-client>
+    <register-center class="com.ifengxue.rpc.client.register.SimpleRegisterCenter">
+        <service-nodes>
+            <service-node serviceName="demo" host="localhost" port="9091"  />
+        </service-nodes>
+    </register-center>
+</rpc-client>
