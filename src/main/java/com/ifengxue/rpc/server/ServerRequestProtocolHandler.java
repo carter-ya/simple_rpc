@@ -1,14 +1,17 @@
 package com.ifengxue.rpc.server;
 
 import com.ifengxue.rpc.factory.ServerConfigFactory;
+import com.ifengxue.rpc.protocol.ProtocolException;
 import com.ifengxue.rpc.protocol.RequestContext;
 import com.ifengxue.rpc.protocol.ResponseContext;
 import com.ifengxue.rpc.protocol.enums.RequestProtocolTypeEnum;
 import com.ifengxue.rpc.server.filter.Interceptor;
+import com.ifengxue.rpc.server.service.IServiceProvider;
 import com.ifengxue.rpc.util.InterceptorUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -20,11 +23,13 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
     private final List<Interceptor> beforeInterceptors;
     private final List<Interceptor> afterInterceptors;
     private final List<Interceptor> exceptionInterceptors;
+    private final IServiceProvider serviceProvider;
     public ServerRequestProtocolHandler() {
-        List<Interceptor> interceptors = ServerConfigFactory.getAllInterceptor();
+        List<Interceptor> interceptors = ServerConfigFactory.getInstance().getAllInterceptor();
         beforeInterceptors = InterceptorUtil.getBeforeInterceptors(interceptors);
         afterInterceptors = InterceptorUtil.getAfterInterceptors(interceptors);
         exceptionInterceptors = InterceptorUtil.getExceptionInterceptors(interceptors);
+        serviceProvider = ServerConfigFactory.getInstance().getServiceProvider();
     }
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RequestContext context) throws Exception {
@@ -37,7 +42,24 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
         if (context.getRequestProtocolTypeEnum() == RequestProtocolTypeEnum.METHOD_INVOKE &&
                 responseContext.getInvokeResult() == null &&
                 responseContext.getResponseError() == null) {
-            //TODO:调用真实方法
+            Object realServiceImpl = serviceProvider.findAllServices().get(responseContext.getRequestClassName());
+            if (realServiceImpl == null) {
+                responseContext.setResponseError(new ProtocolException("请求的服务[" + responseContext.getRequestClassName() + "]不存在！"));
+            } else {
+                try {
+                    Method invokeMethod = Class.forName(responseContext.getRequestClassName())
+                            .getMethod(responseContext.getRequestMethodName(), responseContext.getRequestParameterTypes());
+                    if (invokeMethod == null) {
+                        responseContext.setResponseError(
+                                new ProtocolException("请求的方法[" + responseContext.getRequestClassName() + "." +
+                                        responseContext.getRequestMethodName() + "]不存在！"));
+                    } else {
+                        responseContext.setInvokeResult(invokeMethod.invoke(realServiceImpl, responseContext.getRequestParameters()));
+                    }
+                } catch (Exception e) {
+                    responseContext.setResponseError(e);
+                }
+            }
         }
         // 执行后置拦截器
         if (responseContext.getInvokeResult() == null && responseContext.getResponseError() == null) {

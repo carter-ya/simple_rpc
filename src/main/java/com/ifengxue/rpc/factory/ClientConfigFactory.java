@@ -3,6 +3,7 @@ package com.ifengxue.rpc.factory;
 import com.ifengxue.rpc.client.pool.IChannelPool;
 import com.ifengxue.rpc.client.pool.SimpleChannelPool;
 import com.ifengxue.rpc.client.register.IRegisterCenter;
+import com.ifengxue.rpc.client.register.SimpleRegisterCenter;
 import com.ifengxue.rpc.protocol.enums.CompressTypeEnum;
 import com.ifengxue.rpc.protocol.enums.SerializerTypeEnum;
 
@@ -33,7 +34,6 @@ public class ClientConfigFactory {
     }
 
     public IRegisterCenter getRegisterCenter() {
-        //TODO:实现注册中心
-        return null;
+        return new SimpleRegisterCenter();
     }
 }

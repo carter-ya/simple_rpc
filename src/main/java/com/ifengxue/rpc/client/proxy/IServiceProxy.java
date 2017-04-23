@@ -1,8 +1,13 @@
 package com.ifengxue.rpc.client.proxy;
 
+import com.ifengxue.rpc.protocol.ResponseProtocol;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 服务代理接口
@@ -10,6 +15,10 @@ import java.util.Objects;
  * Created by LiuKeFeng on 2017-04-22.
  */
 public interface IServiceProxy extends InvocationHandler, Serializable {
+    /**
+     * 存储服务端响应结果的缓存Map
+     */
+    Map<String, BlockingQueue<ResponseProtocol>> CACHED_RESPONSE_PROTOCOL_MAP = new ConcurrentHashMap<>();
     /**
      * 获取提供服务的接口类
      * @return

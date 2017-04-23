@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 /**
  * 服务注册中心
  *
- * Created by liuke on 2017-04-23.
+ * Created by liukefeng on 2017-04-23.
  */
 public interface IRegisterCenter {
     /**
