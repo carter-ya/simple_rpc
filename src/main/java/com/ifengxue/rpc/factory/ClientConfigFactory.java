@@ -1,7 +1,8 @@
 package com.ifengxue.rpc.factory;
 
-import com.ifengxue.rpc.client.pool.IChannelFactory;
-import com.ifengxue.rpc.client.pool.SimpleChannelFactory;
+import com.ifengxue.rpc.client.pool.IChannelPool;
+import com.ifengxue.rpc.client.pool.SimpleChannelPool;
+import com.ifengxue.rpc.client.register.IRegisterCenter;
 import com.ifengxue.rpc.protocol.enums.CompressTypeEnum;
 import com.ifengxue.rpc.protocol.enums.SerializerTypeEnum;
 
@@ -27,7 +28,12 @@ public class ClientConfigFactory {
         return CompressTypeEnum.DEFLATER;
     }
 
-    public IChannelFactory getChannelFactory() {
-        return new SimpleChannelFactory();
+    public IChannelPool getChannelPool() {
+        return new SimpleChannelPool(getRegisterCenter());
+    }
+
+    public IRegisterCenter getRegisterCenter() {
+        //TODO:实现注册中心
+        return null;
     }
 }
