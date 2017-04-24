@@ -1,15 +1,19 @@
 package com.ifengxue.rpc.server;
 
 import com.ifengxue.rpc.factory.ServerConfigFactory;
-import com.ifengxue.rpc.protocol.ProtocolException;
-import com.ifengxue.rpc.protocol.RequestContext;
-import com.ifengxue.rpc.protocol.ResponseContext;
+import com.ifengxue.rpc.protocol.*;
+import com.ifengxue.rpc.protocol.enums.CompressTypeEnum;
 import com.ifengxue.rpc.protocol.enums.RequestProtocolTypeEnum;
 import com.ifengxue.rpc.server.filter.Interceptor;
 import com.ifengxue.rpc.server.service.IServiceProvider;
 import com.ifengxue.rpc.util.InterceptorUtil;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.AttributeKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -24,6 +28,7 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
     private final List<Interceptor> afterInterceptors;
     private final List<Interceptor> exceptionInterceptors;
     private final IServiceProvider serviceProvider;
+    private Logger logger = LoggerFactory.getLogger(getClass());
     public ServerRequestProtocolHandler() {
         List<Interceptor> interceptors = ServerConfigFactory.getInstance().getAllInterceptor();
         beforeInterceptors = InterceptorUtil.getBeforeInterceptors(interceptors);
@@ -33,6 +38,7 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
     }
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RequestContext context) throws Exception {
+        logger.info("开始处理客户端:{}方法调用", context.getRequestProtocol().getSessionID());
         ResponseContext responseContext = new ResponseContext(context);
         responseContext.bindAttribute(ResponseContext.REQUEST_IN_TIME_MILLIS_KEY, System.currentTimeMillis());
         // 执行前置拦截器
@@ -72,6 +78,7 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
         }
 
         //TODO:处理所有拦截器全报错的情况
+        ctx.writeAndFlush(responseContext);
     }
 
     private void invokeInterceptors(ResponseContext context, List<Interceptor> interceptors, Interceptor.InterceptorTypeEnum interceptorTypeEnum) {

@@ -51,7 +51,12 @@ public class SimpleBaseKeyedPooledChannelFactory extends BaseKeyedPooledObjectFa
                     }
                 })
                 .option(ChannelOption.SO_KEEPALIVE, true);
-        ChannelFuture future = bootstrap.bind(serviceNode.getHost(), serviceNode.getPort()).sync();
+        ChannelFuture future = bootstrap.connect(serviceNode.getHost(), serviceNode.getPort()).sync();
+        future.addListener((ChannelFutureListener)listner -> {
+            if (future.isSuccess()) {
+                logger.info("Service:{} new channel create success.", key);
+            }
+        });
         Channel channel = future.channel();
         CACHED_EVENT_LOOP_GROUP.put(channel, eventLoopGroup);
         return channel;

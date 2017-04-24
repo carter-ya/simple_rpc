@@ -6,7 +6,6 @@ import com.ifengxue.rpc.protocol.enums.SerializerTypeEnum;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.util.AttributeKey;
 
 /**
  * 请求协议解析器
@@ -41,9 +40,6 @@ public class RequestProtocolDecoder extends LengthFieldBasedFrameDecoder {
         }
         RequestProtocol requestProtocol = serializerTypeEnum.getSerializer().deserialize(buffer);
         RequestContext requestContext = new RequestContext(version, requestProtocolTypeEnum, compressTypeEnum, serializerTypeEnum, requestProtocol);
-
-        //绑定请求协议到上下文中
-        ctx.attr(AttributeKey.newInstance(ProtocolConsts.BIND_REQUEST_PROTOCOL_TO_CONTEXT)).set(requestContext);
 
         return requestContext;
     }

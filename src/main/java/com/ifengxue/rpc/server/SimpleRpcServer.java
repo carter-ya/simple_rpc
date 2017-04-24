@@ -51,7 +51,6 @@ public class SimpleRpcServer implements IRpcServer {
         try {
             ChannelFuture channelFuture = bootstrap.bind(host, port).sync();
             logger.info("{} start success!", configFactory.getServiceName());
-            channelFuture.addListener(ChannelFutureListener.CLOSE);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -36,7 +36,7 @@ public class SimpleServiceProxy extends AbstractServiceProxy {
         } finally {
             Optional.ofNullable(channel).ifPresent(ch -> channelPool.returnObject(serviceNodeName, ch));
         }
-        ResponseProtocol responseProtocol = CACHED_RESPONSE_PROTOCOL_MAP.get(requestProtocol.getSessionID()).poll();
+        ResponseProtocol responseProtocol = CACHED_RESPONSE_PROTOCOL_MAP.get(requestProtocol.getSessionID()).take();
         CACHED_RESPONSE_PROTOCOL_MAP.remove(requestProtocol.getSessionID());
         if (responseProtocol.getError() != null) {
             throw responseProtocol.getError();

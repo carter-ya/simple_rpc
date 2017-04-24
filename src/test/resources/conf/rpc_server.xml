@@ -2,7 +2,7 @@
 <rpc-server>
     <server name="rpc_service" host="localhost" port="9091" />
     <services>
-        <service class="" />
+        <service class="com.ifengxue.rpc.demo.DemoService" />
     </services>
     <interceptros>
         <interceptor class="" />
