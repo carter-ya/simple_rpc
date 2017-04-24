@@ -18,7 +18,7 @@ public interface IServiceProxy extends InvocationHandler, Serializable {
     /**
      * 存储服务端响应结果的缓存Map
      */
-    Map<String, BlockingQueue<ResponseProtocol>> CACHED_RESPONSE_PROTOCOL_MAP = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, BlockingQueue<ResponseProtocol>> CACHED_RESPONSE_PROTOCOL_MAP = new ConcurrentHashMap<>();
     /**
      * 获取提供服务的接口类
      * @return

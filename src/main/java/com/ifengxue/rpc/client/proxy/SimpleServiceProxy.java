@@ -27,11 +27,14 @@ public class SimpleServiceProxy extends AbstractServiceProxy {
         Channel channel = null;
         try {
             channel = channelPool.borrowObject(serviceNodeName);
-            channel.writeAndFlush(requestProtocol).sync();
+            //必须放在前面，否则会出现客户端和服务端并发访问map的情况
             CACHED_RESPONSE_PROTOCOL_MAP.put(requestProtocol.getSessionID(), new ArrayBlockingQueue<>(1));
+            channel.writeAndFlush(requestProtocol).sync();
         } catch (TimeoutException e) {
+            CACHED_RESPONSE_PROTOCOL_MAP.remove(requestProtocol.getSessionID());
             e.printStackTrace();
         } catch (Throwable e) {
+            CACHED_RESPONSE_PROTOCOL_MAP.remove(requestProtocol.getSessionID());
             e.printStackTrace();
         } finally {
             Optional.ofNullable(channel).ifPresent(ch -> channelPool.returnObject(serviceNodeName, ch));

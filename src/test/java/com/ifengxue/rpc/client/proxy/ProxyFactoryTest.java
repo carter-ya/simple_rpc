@@ -30,8 +30,8 @@ public class ProxyFactoryTest {
         PropertyConfigurator.configure(URLDecoder.decode(ProxyFactoryTest.class.getClassLoader().getResource("conf/log4j_c.properties").getFile(), "UTF-8"));
         ClientConfigFactory.initConfigFactory(URLDecoder.decode(ProxyFactoryTest.class.getClassLoader().getResource("conf/rpc_client.xml").getFile(), "UTF-8"));
         IDemoService demoService = ProxyFactory.create(IDemoService.class, "demo");
-//        demoService.sayHelloWorld();
-//        System.out.println("currentServerTime:" + demoService.currentServerTime());
+        demoService.sayHelloWorld();
+        System.out.println("currentServerTime:" + demoService.currentServerTime());
         System.out.println("echo:" + demoService.echo("Hello Server!"));
     }
 }

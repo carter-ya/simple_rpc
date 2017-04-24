@@ -7,6 +7,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.BlockingQueue;
+
 /**
  * 客户端响应处理器
  *
@@ -16,7 +18,8 @@ public class ClientResponseHandler extends SimpleChannelInboundHandler<ResponseP
     private Logger logger = LoggerFactory.getLogger(getClass());
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ResponseProtocol responseProtocol) throws Exception {
-        logger.info(responseProtocol.toString());
-        IServiceProxy.CACHED_RESPONSE_PROTOCOL_MAP.get(responseProtocol.getSessionID()).offer(responseProtocol);
+        logger.info("收到服务端对客户端{}的响应", responseProtocol.getSessionID());
+        BlockingQueue<ResponseProtocol> blockingQueue = IServiceProxy.CACHED_RESPONSE_PROTOCOL_MAP.get(responseProtocol.getSessionID());
+        blockingQueue.put(responseProtocol);
     }
 }
