@@ -7,6 +7,8 @@ import com.ifengxue.rpc.serialize.ISerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 请求协议编码器
@@ -18,6 +20,7 @@ public class RequestProtocolEncoder extends MessageToByteEncoder<RequestProtocol
     private ISerializer serializer = serializerTypeEnum.getSerializer();
     private CompressTypeEnum compressTypeEnum = ClientConfigFactory.getInstance().getCompressTypeEnum();
     private long compressRequestIfLengthGreaterTo = ClientConfigFactory.getInstance().compressRequestIfLengthGreaterTo();
+    private Logger logger = LoggerFactory.getLogger(getClass());
     @Override
     protected void encode(ChannelHandlerContext ctx, RequestProtocol msg, ByteBuf out) throws Exception {
         byte[] buffer = serializer.serialize(msg);
@@ -35,5 +38,11 @@ public class RequestProtocolEncoder extends MessageToByteEncoder<RequestProtocol
         out.writeInt(0);
         out.writeLong(0L);
         out.writeBytes(buffer);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        ctx.channel().close();
+        logger.error("请求协议编码出错:" + cause.getMessage(), cause);
     }
 }

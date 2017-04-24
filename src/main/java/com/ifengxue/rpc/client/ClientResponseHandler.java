@@ -22,4 +22,10 @@ public class ClientResponseHandler extends SimpleChannelInboundHandler<ResponseP
         BlockingQueue<ResponseProtocol> blockingQueue = IServiceProxy.CACHED_RESPONSE_PROTOCOL_MAP.get(responseProtocol.getSessionID());
         blockingQueue.put(responseProtocol);
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        ctx.channel().close();
+        logger.error("客户端接收服务端响应出错:" + cause.getMessage(), cause);
+    }
 }

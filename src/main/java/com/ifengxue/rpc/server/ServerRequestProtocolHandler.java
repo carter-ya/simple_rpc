@@ -2,16 +2,12 @@ package com.ifengxue.rpc.server;
 
 import com.ifengxue.rpc.factory.ServerConfigFactory;
 import com.ifengxue.rpc.protocol.*;
-import com.ifengxue.rpc.protocol.enums.CompressTypeEnum;
 import com.ifengxue.rpc.protocol.enums.RequestProtocolTypeEnum;
 import com.ifengxue.rpc.server.filter.Interceptor;
 import com.ifengxue.rpc.server.service.IServiceProvider;
 import com.ifengxue.rpc.util.InterceptorUtil;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,9 +72,12 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
         if (responseContext.getResponseError() != null) {
             invokeInterceptors(responseContext, exceptionInterceptors, Interceptor.InterceptorTypeEnum.EXCEPTION);
         }
+        responseContext.bindAttribute(ResponseContext.REQUEST_OUT_TIME_MILLIS_KEY, System.currentTimeMillis());
 
-        //TODO:处理所有拦截器全报错的情况
+        //响应客户端最终结果
         ctx.writeAndFlush(responseContext);
+        logger.info("客户端:{}请求耗时:{}ms", context.getRequestProtocol().getSessionID(),
+                (Long)responseContext.getBindAttribute(ResponseContext.REQUEST_OUT_TIME_MILLIS_KEY) - (Long)responseContext.getBindAttribute(ResponseContext.REQUEST_IN_TIME_MILLIS_KEY));
     }
 
     private void invokeInterceptors(ResponseContext context, List<Interceptor> interceptors, Interceptor.InterceptorTypeEnum interceptorTypeEnum) {
@@ -89,9 +88,16 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
                     break;
                 }
             } catch (Throwable throwable) {
+                logger.error("执行" + interceptorTypeEnum + "类型拦截器出错:" + throwable.getMessage(), throwable);
                 context.setResponseError(throwable);
                 break;
             }
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        ctx.channel().close();
+        logger.error("服务端处理客户端响应出错:" + cause.getMessage(), cause);
     }
 }

@@ -16,6 +16,8 @@ import java.util.Optional;
 public class ResponseContext {
     /** 请求进入时的时间戳key */
     public static final String REQUEST_IN_TIME_MILLIS_KEY = "request_in_time_millis_key";
+    /** 请求离开时的时间戳 */
+    public static final String REQUEST_OUT_TIME_MILLIS_KEY = "request_out_time_millis_key";
     /** 响应的错误堆栈 */
     private Throwable responseError;
     /** 请求上下文 */

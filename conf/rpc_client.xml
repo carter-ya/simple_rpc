@@ -1,9 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rpc-client>
+    <!-- 注册中心实现 -->
     <register-center class="com.ifengxue.rpc.client.register.SimpleRegisterCenter">
         <service-nodes>
             <service-node serviceName="" host="" port=""  />
             <service-node serviceName="" host="" port=""  />
         </service-nodes>
     </register-center>
+    <!-- 连接池配置信息 -->
+    <socket-pool>
+        <!-- 创建连接超时时间:ms -->
+        <property name="connectTimeout" value="3000" />
+        <!-- 读取服务响应超时时间:ms -->
+        <property name="readTimeout" value="10000" />
+        <!-- 发送数据到服务的超时时间:ms -->
+        <property name="sendTimeout" value="5000" />
+        <!-- 连接池中保持对每个服务的最小连接数 -->
+        <property name="minPoolSize" value="1" />
+        <!-- 连接池中保持对每个服务的最大连接数 -->
+        <property name="maxPoolSize" value="100" />
+        <!-- 连接池中保持对每个服务的最小空闲连接数 -->
+        <property name="minIdle" value="0" />
+        <!-- 连接池中保持对每个服务的最大空闲连接数 -->
+        <property name="maxIdle" value="1" />
+        <!-- 从连接池中取出连接测试是否可用 -->
+        <property name="testOnBorrow" value="true" />
+        <!-- 帧的最大长度 -->
+        <property name="maxFrameLength" value="5242880" />
+    </socket-pool>
+    <!--
+        serialize:序列化方式 目前支持kryo
+        compress:压缩方式 目前支持deflater和uncompress(不压缩)
+        minCompressFrameLength:当帧的长度>=该值则自动压缩(前提是compress值不是uncompress)
+    -->
+    <protocol serialize="kryo"  compress="deflater" minCompressFrameLength="3145728"/>
 </rpc-client>

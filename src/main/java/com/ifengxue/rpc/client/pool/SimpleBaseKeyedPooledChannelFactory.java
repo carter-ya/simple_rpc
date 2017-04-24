@@ -2,6 +2,7 @@ package com.ifengxue.rpc.client.pool;
 
 import com.ifengxue.rpc.client.ClientResponseHandler;
 import com.ifengxue.rpc.client.register.IRegisterCenter;
+import com.ifengxue.rpc.factory.ClientConfigFactory;
 import com.ifengxue.rpc.protocol.RequestProtocolEncoder;
 import com.ifengxue.rpc.protocol.ResponseProtocolDecoder;
 import io.netty.bootstrap.Bootstrap;
@@ -22,10 +23,11 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by liuke on 2017-04-23.
+ * Created by liukefeng on 2017-04-23.
  */
 public class SimpleBaseKeyedPooledChannelFactory extends BaseKeyedPooledObjectFactory<String, Channel> {
     private final IRegisterCenter registerCenter;
+    private final ChannelPoolConfig channelPoolConfig = ClientConfigFactory.getInstance().getChannelPoolConfig();
     private Logger logger = LoggerFactory.getLogger(getClass());
     private static final Map<Channel, EventLoopGroup> CACHED_EVENT_LOOP_GROUP = new ConcurrentHashMap<>();
 
@@ -50,9 +52,11 @@ public class SimpleBaseKeyedPooledChannelFactory extends BaseKeyedPooledObjectFa
                                 .addLast(new ClientResponseHandler());
                     }
                 })
-                .option(ChannelOption.SO_KEEPALIVE, true);
+                .option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, channelPoolConfig.getConnectTimeout());
+
         ChannelFuture future = bootstrap.connect(serviceNode.getHost(), serviceNode.getPort()).sync();
-        future.addListener((ChannelFutureListener)listner -> {
+        future.addListener((ChannelFutureListener)listener -> {
             if (future.isSuccess()) {
                 logger.info("Service:{} new channel create success.", key);
             }

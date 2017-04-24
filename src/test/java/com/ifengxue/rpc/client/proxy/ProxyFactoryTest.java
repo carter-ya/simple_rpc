@@ -2,7 +2,6 @@ package com.ifengxue.rpc.client.proxy;
 
 import com.ifengxue.rpc.demo.IDemoService;
 import com.ifengxue.rpc.factory.ClientConfigFactory;
-import com.ifengxue.rpc.server.ServerAppTest;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Test;
 

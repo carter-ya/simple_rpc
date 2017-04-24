@@ -6,6 +6,8 @@ import com.ifengxue.rpc.protocol.enums.SerializerTypeEnum;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 请求协议解析器
@@ -13,6 +15,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  * Created by LiuKeFeng on 2017-04-21.
  */
 public class RequestProtocolDecoder extends LengthFieldBasedFrameDecoder {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     public RequestProtocolDecoder() {
         this(1024 * 1024 * 10);
     }
@@ -46,7 +49,8 @@ public class RequestProtocolDecoder extends LengthFieldBasedFrameDecoder {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
+        ctx.channel().close();
+        logger.error("请求协议解码失败:" + cause.getMessage(), cause);
     }
 
     @Override

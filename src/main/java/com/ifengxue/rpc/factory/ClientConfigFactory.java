@@ -1,19 +1,20 @@
 package com.ifengxue.rpc.factory;
 
+import com.ifengxue.rpc.client.pool.ChannelPoolConfig;
 import com.ifengxue.rpc.client.pool.IChannelPool;
 import com.ifengxue.rpc.client.pool.SimpleChannelPool;
 import com.ifengxue.rpc.client.register.IRegisterCenter;
-import com.ifengxue.rpc.client.register.SimpleRegisterCenter;
 import com.ifengxue.rpc.protocol.enums.CompressTypeEnum;
 import com.ifengxue.rpc.protocol.enums.SerializerTypeEnum;
+import org.apache.commons.beanutils.BeanUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by LiuKeFeng on 2017-04-21.
@@ -23,6 +24,7 @@ public class ClientConfigFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientConfigFactory.class);
     private static volatile boolean isInitial = false;
     private static IRegisterCenter registerCenter;
+    private static ChannelPoolConfig channelPoolConfig = new ChannelPoolConfig();
     private ClientConfigFactory() {}
 
     public static synchronized void initConfigFactory(String config) {
@@ -41,14 +43,17 @@ public class ClientConfigFactory {
             registerCenter = (IRegisterCenter) Class.forName(className).newInstance();
             LOGGER.info("init registerCenter...");
             registerCenter.init(registerCenterElement);
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            //初始化连接池配置
+            Element socketPoolElement = rootElement.element("socket-pool");
+            List<Element> propertyElements = socketPoolElement.elements("property");
+            for (Element propertyElement : propertyElements) {
+                String propertyName = propertyElement.attributeValue("name");
+                String propertyValue = propertyElement.attributeValue("value");
+                BeanUtils.setProperty(channelPoolConfig, propertyName, propertyValue);
+            }
+            LOGGER.info("初始化连接池配置信息成功...");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -74,5 +79,9 @@ public class ClientConfigFactory {
 
     public IRegisterCenter getRegisterCenter() {
         return registerCenter;
+    }
+
+    public ChannelPoolConfig getChannelPoolConfig() {
+        return channelPoolConfig;
     }
 }
