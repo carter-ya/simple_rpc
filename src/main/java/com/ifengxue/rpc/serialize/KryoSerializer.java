@@ -3,6 +3,7 @@ package com.ifengxue.rpc.serialize;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.JavaSerializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 public class KryoSerializer implements ISerializer {
     public <T> byte[] serialize(T object) {
         Kryo kryo = new Kryo();
+        kryo.register(Throwable.class, new JavaSerializer());
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Output output = new Output(byteArrayOutputStream);
         kryo.writeClassAndObject(output, object);
@@ -25,6 +27,7 @@ public class KryoSerializer implements ISerializer {
 
     public <T> T deserialize(byte[] buffer) {
         Kryo kryo = new Kryo();
+        kryo.register(Throwable.class, new JavaSerializer());
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
         Input input = new Input(byteArrayInputStream);
         input.close();

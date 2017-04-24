@@ -32,5 +32,10 @@ public class ProxyFactoryTest {
         demoService.sayHelloWorld();
         System.out.println("currentServerTime:" + demoService.currentServerTime());
         System.out.println("echo:" + demoService.echo("Hello Server!"));
+        try {
+            demoService.testThrowException();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

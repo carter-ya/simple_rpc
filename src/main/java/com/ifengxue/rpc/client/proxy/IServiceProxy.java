@@ -4,7 +4,6 @@ import com.ifengxue.rpc.protocol.ResponseProtocol;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;

@@ -10,6 +10,7 @@ public class ChannelPoolConfig implements Serializable {
     private int connectTimeout = 3000;
     private int readTimeout = 10000;
     private int sendTimeout = 5000;
+    private int maxWaitTimeout = 10000;
     private int minPoolSize = 1;
     private int maxPoolSize = 100;
     private long maxFrameLength = 5242880;
@@ -137,15 +138,34 @@ public class ChannelPoolConfig implements Serializable {
         this.testOnBorrow = testOnBorrow;
     }
 
+    public int getMaxWaitTimeout() {
+        return maxWaitTimeout;
+    }
+
+    /**
+     * 从连接池中取出连接的最大等待时间,最小为1
+     * @param maxWaitTimeout
+     */
+    public void setMaxWaitTimeout(int maxWaitTimeout) {
+        if (maxWaitTimeout <= 0) {
+            maxWaitTimeout = 1;
+        }
+        this.maxWaitTimeout = maxWaitTimeout;
+    }
+
     @Override
     public String toString() {
         return "ChannelPoolConfig{" +
                 "connectTimeout=" + connectTimeout +
                 ", readTimeout=" + readTimeout +
                 ", sendTimeout=" + sendTimeout +
+                ", maxWaitTimeout=" + maxWaitTimeout +
                 ", minPoolSize=" + minPoolSize +
                 ", maxPoolSize=" + maxPoolSize +
                 ", maxFrameLength=" + maxFrameLength +
+                ", minIdle=" + minIdle +
+                ", maxIdle=" + maxIdle +
+                ", testOnBorrow=" + testOnBorrow +
                 '}';
     }
 }

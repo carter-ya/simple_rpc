@@ -21,4 +21,9 @@ public class DemoService implements IDemoService {
     public String echo(String echo) {
         return echo;
     }
+
+    @Override
+    public void testThrowException() throws Exception {
+        throw new IllegalStateException("我喜欢抛异常");
+    }
 }

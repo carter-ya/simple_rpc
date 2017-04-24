@@ -15,6 +15,8 @@
         <property name="readTimeout" value="10000" />
         <!-- 发送数据到服务的超时时间:ms -->
         <property name="sendTimeout" value="5000" />
+        <!-- 从连接池中取连接的最大等待时间 -->
+        <property name="maxWaitTimeout" value="10000" />
         <!-- 连接池中保持对每个服务的最小连接数 -->
         <property name="minPoolSize" value="1" />
         <!-- 连接池中保持对每个服务的最大连接数 -->

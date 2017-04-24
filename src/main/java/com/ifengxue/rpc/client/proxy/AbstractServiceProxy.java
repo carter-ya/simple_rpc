@@ -43,11 +43,10 @@ public abstract class AbstractServiceProxy implements IServiceProxy {
 
     /**
      * 子类需要实现的如何调用服务
-     * @throws TimeoutException 连接超时异常
      * @throws ConnectException 连接被拒绝异常
      * @throws Throwable 其他错误
      */
-    protected abstract Object invoke(Object proxy, RequestProtocol requestProtocol) throws TimeoutException, ConnectException, Throwable;
+    protected abstract Object invoke(Object proxy, RequestProtocol requestProtocol) throws ConnectException, Throwable;
 
     @Override
     public Class<?> getInterfaceClass() {

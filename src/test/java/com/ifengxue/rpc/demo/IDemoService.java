@@ -7,4 +7,5 @@ public interface IDemoService {
     void sayHelloWorld();
     long currentServerTime();
     String echo(String echo);
+    void testThrowException() throws Exception;
 }

@@ -12,16 +12,18 @@ import java.util.Arrays;
  * Created by LiuKeFeng on 2017-04-21.
  */
 public enum SerializerTypeEnum {
-    KRYO_SERIALIZER(Byte.valueOf("1")) {
+    KRYO_SERIALIZER(Byte.valueOf("1"), "kryo") {
         @Override
         public ISerializer getSerializer() {
             return new KryoSerializer();
         }
     };
     private final byte type;
+    private final String name;
     private ISerializer serializer;
-    SerializerTypeEnum(byte type) {
+    SerializerTypeEnum(byte type, String name) {
         this.type = type;
+        this.name = name;
     }
 
     public byte getType() {
@@ -32,5 +34,9 @@ public enum SerializerTypeEnum {
 
     public static SerializerTypeEnum getEnumByType(byte type) {
         return Arrays.stream(values()).filter(typeEnum -> typeEnum.type == type).findAny().orElseThrow(() -> new ProtocolException("序列化类型[" + type + "]暂不支持！"));
+    }
+
+    public static SerializerTypeEnum getEnumByName(String name) {
+        return Arrays.stream(values()).filter(typeEnum -> typeEnum.name.equalsIgnoreCase(name)).findAny().orElseThrow(() -> new ProtocolException("序列化类型[" + name + "]暂不支持！"));
     }
 }

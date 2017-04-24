@@ -19,7 +19,7 @@ public class RequestProtocolEncoder extends MessageToByteEncoder<RequestProtocol
     private SerializerTypeEnum serializerTypeEnum = ClientConfigFactory.getInstance().getSerializerTypeEnum();
     private ISerializer serializer = serializerTypeEnum.getSerializer();
     private CompressTypeEnum compressTypeEnum = ClientConfigFactory.getInstance().getCompressTypeEnum();
-    private long compressRequestIfLengthGreaterTo = ClientConfigFactory.getInstance().compressRequestIfLengthGreaterTo();
+    private long compressRequestIfLengthGreaterTo = ClientConfigFactory.getInstance().minCompressFrameLength();
     private Logger logger = LoggerFactory.getLogger(getClass());
     @Override
     protected void encode(ChannelHandlerContext ctx, RequestProtocol msg, ByteBuf out) throws Exception {
