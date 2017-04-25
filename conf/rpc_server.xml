@@ -4,7 +4,7 @@
     <services>
         <service class="" />
     </services>
-    <interceptros>
-
-    </interceptros>
+    <interceptors>
+        <interceptor class="com.ifengxue.rpc.server.interceptor.BeanValidateInterceptor" />
+    </interceptors>
 </rpc-server>

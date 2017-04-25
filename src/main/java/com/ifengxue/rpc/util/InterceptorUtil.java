@@ -1,6 +1,6 @@
 package com.ifengxue.rpc.util;
 
-import com.ifengxue.rpc.server.filter.Interceptor;
+import com.ifengxue.rpc.server.interceptor.Interceptor;
 
 import java.util.ArrayList;
 import java.util.Collections;

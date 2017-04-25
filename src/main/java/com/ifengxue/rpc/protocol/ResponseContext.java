@@ -4,6 +4,7 @@ import com.ifengxue.rpc.protocol.enums.CompressTypeEnum;
 import com.ifengxue.rpc.protocol.enums.RequestProtocolTypeEnum;
 import com.ifengxue.rpc.protocol.enums.SerializerTypeEnum;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -27,8 +28,19 @@ public class ResponseContext {
     /** 绑定在响应上下文中的属性：可以在所有拦截器中读取 */
     private Map<String, Object> bindAttributeMap;
 
+    private Class<?> requestClass;
+    private Method requestMethod;
+
     public ResponseContext(RequestContext requestContext) {
         this.requestContext = requestContext;
+        try {
+            requestClass = Class.forName(requestContext.getRequestProtocol().getClassName());
+            requestMethod = requestClass.getMethod(requestContext.getRequestProtocol().getMethodName(), requestContext.getRequestProtocol().getParameterTypes());
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public int getRequestVersion() {
@@ -77,6 +89,14 @@ public class ResponseContext {
 
     public Object getInvokeResult() {
         return invokeResult;
+    }
+
+    public Class<?> getRequestClass() {
+        return requestClass;
+    }
+
+    public Method getRequestMethod() {
+        return requestMethod;
     }
 
     public void setInvokeResult(Object invokeResult) {

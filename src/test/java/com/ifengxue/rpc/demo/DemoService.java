@@ -26,4 +26,9 @@ public class DemoService implements IDemoService {
     public void testThrowException() throws Exception {
         throw new IllegalStateException("我喜欢抛异常");
     }
+
+    @Override
+    public ValidateBean validate(ValidateBean bean) {
+        return bean;
+    }
 }

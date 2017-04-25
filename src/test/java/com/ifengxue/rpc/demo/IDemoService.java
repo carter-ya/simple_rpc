@@ -8,4 +8,5 @@ public interface IDemoService {
     long currentServerTime();
     String echo(String echo);
     void testThrowException() throws Exception;
+    ValidateBean validate(ValidateBean bean);
 }

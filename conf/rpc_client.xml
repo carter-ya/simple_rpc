@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rpc-client>
     <!-- 注册中心实现 -->
-    <register-center class="com.ifengxue.rpc.client.register.SimpleRegisterCenter">
+    <register-center class="com.ifengxue.rpc.client.register.XmlRegisterCenter">
         <service-nodes>
             <service-node serviceName="" host="" port=""  />
             <service-node serviceName="" host="" port=""  />

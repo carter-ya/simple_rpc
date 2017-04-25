@@ -1,4 +1,4 @@
-package com.ifengxue.rpc.server.filter;
+package com.ifengxue.rpc.server.interceptor;
 
 import com.ifengxue.rpc.protocol.ResponseContext;
 

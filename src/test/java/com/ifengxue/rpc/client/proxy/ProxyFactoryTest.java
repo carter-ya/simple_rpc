@@ -1,6 +1,7 @@
 package com.ifengxue.rpc.client.proxy;
 
 import com.ifengxue.rpc.demo.IDemoService;
+import com.ifengxue.rpc.demo.ValidateBean;
 import com.ifengxue.rpc.factory.ClientConfigFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Test;
@@ -37,5 +38,13 @@ public class ProxyFactoryTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        ValidateBean bean = new ValidateBean();
+        try {
+            bean = demoService.validate(bean);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        bean.setAge(9);
+        demoService.validate(bean);
     }
 }

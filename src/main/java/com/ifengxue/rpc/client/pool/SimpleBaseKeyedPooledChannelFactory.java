@@ -23,6 +23,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 默认实现的连接池
+ *
  * Created by liukefeng on 2017-04-23.
  */
 public class SimpleBaseKeyedPooledChannelFactory extends BaseKeyedPooledObjectFactory<String, Channel> {

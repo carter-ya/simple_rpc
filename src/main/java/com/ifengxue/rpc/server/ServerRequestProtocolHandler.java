@@ -3,7 +3,7 @@ package com.ifengxue.rpc.server;
 import com.ifengxue.rpc.factory.ServerConfigFactory;
 import com.ifengxue.rpc.protocol.*;
 import com.ifengxue.rpc.protocol.enums.RequestProtocolTypeEnum;
-import com.ifengxue.rpc.server.filter.Interceptor;
+import com.ifengxue.rpc.server.interceptor.Interceptor;
 import com.ifengxue.rpc.server.service.IServiceProvider;
 import com.ifengxue.rpc.util.InterceptorUtil;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,7 +11,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -33,7 +33,7 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
         serviceProvider = ServerConfigFactory.getInstance().getServiceProvider();
     }
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RequestContext context) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RequestContext context) {
         logger.info("开始处理客户端:{}方法调用", context.getRequestProtocol().getSessionID());
         ResponseContext responseContext = new ResponseContext(context);
         responseContext.bindAttribute(ResponseContext.REQUEST_IN_TIME_MILLIS_KEY, System.currentTimeMillis());
@@ -49,20 +49,14 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
                 responseContext.setResponseError(new ProtocolException("请求的服务[" + responseContext.getRequestClassName() + "]不存在！"));
             } else {
                 try {
-                    Method invokeMethod = Class.forName(responseContext.getRequestClassName())
-                            .getMethod(responseContext.getRequestMethodName(), responseContext.getRequestParameterTypes());
-                    if (invokeMethod == null) {
-                        responseContext.setResponseError(
-                                new ProtocolException("请求的方法[" + responseContext.getRequestClassName() + "." +
-                                        responseContext.getRequestMethodName() + "]不存在！"));
-                    } else {
-                        responseContext.setInvokeResult(invokeMethod.invoke(realServiceImpl, responseContext.getRequestParameters()));
-                    }
+                    responseContext.setInvokeResult(responseContext.getRequestMethod()
+                            .invoke(realServiceImpl, responseContext.getRequestParameters()));
                 } catch (Exception e) {
                     responseContext.setResponseError(e);
                 }
             }
         }
+
         // 执行后置拦截器
         if (responseContext.getInvokeResult() == null && responseContext.getResponseError() == null) {
             invokeInterceptors(responseContext, afterInterceptors, Interceptor.InterceptorTypeEnum.AFTER);
@@ -98,6 +92,9 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.channel().close();
+        if (cause instanceof InvocationTargetException) {
+            cause = cause.getCause();
+        }
         logger.error("服务端处理客户端响应出错:" + cause.getMessage(), cause);
     }
 }

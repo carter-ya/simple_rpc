@@ -1,8 +1,8 @@
 package com.ifengxue.rpc.factory;
 
-import com.ifengxue.rpc.server.filter.Interceptor;
+import com.ifengxue.rpc.server.interceptor.Interceptor;
 import com.ifengxue.rpc.server.service.IServiceProvider;
-import com.ifengxue.rpc.server.service.SimpleServiceProvider;
+import com.ifengxue.rpc.server.service.XmlServiceProvider;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -33,6 +33,7 @@ public class ServerConfigFactory {
     private static volatile boolean isInitial;
     private static Properties serviceProperties = new Properties();
     private static List<String> classNames = new ArrayList<>();
+    private static List<Interceptor> interceptors = new ArrayList<>();
     private ServerConfigFactory() {}
     public static ServerConfigFactory getInstance() {
         return INSTANCE;
@@ -64,17 +65,27 @@ public class ServerConfigFactory {
             for (Element element : serviceElements) {
                 classNames.add(element.attributeValue("class"));
             }
-        } catch (DocumentException e) {
+            //初始化拦截器
+            Element interceptorsElement = rootElement.element("interceptors");
+            if (interceptorsElement != null) {
+                List<Element> interceptorElements = interceptorsElement.elements("interceptor");
+                for (Element interceptorElement : interceptorElements) {
+                    Interceptor interceptor = (Interceptor) Class.forName(interceptorElement.attributeValue("class")).newInstance();
+                    LOGGER.info("register interceptor:" + interceptor.getClass().getName());
+                    interceptors.add(interceptor);
+                }
+            }
+        } catch (Exception e) {
             throw new IllegalStateException("服务端初始化失败:" + e.getMessage(), e);
         }
         isInitial = true;
     }
     public List<Interceptor> getAllInterceptor() {
-        return Collections.emptyList();
+        return interceptors;
     }
 
     public IServiceProvider getServiceProvider() {
-        return new SimpleServiceProvider(new ArrayList<>(classNames));
+        return new XmlServiceProvider(new ArrayList<>(classNames));
     }
 
     public String getServiceName() {

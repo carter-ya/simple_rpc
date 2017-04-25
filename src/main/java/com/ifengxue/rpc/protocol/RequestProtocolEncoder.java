@@ -10,6 +10,8 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * 请求协议编码器
  *
@@ -43,6 +45,9 @@ public class RequestProtocolEncoder extends MessageToByteEncoder<RequestProtocol
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.channel().close();
+        if (cause instanceof InvocationTargetException) {
+            cause = cause.getCause();
+        }
         logger.error("请求协议编码出错:" + cause.getMessage(), cause);
     }
 }

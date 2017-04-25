@@ -2,21 +2,18 @@ package com.ifengxue.rpc.server.service;
 
 import com.ifengxue.rpc.protocol.annotation.RpcService;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 默认实现的服务提供者
+ * xml服务提供者
  *
  * Created by LiuKeFeng on 2017-04-23.
  */
-public class SimpleServiceProvider implements IServiceProvider {
+public class XmlServiceProvider implements IServiceProvider {
     private final Map<String, Object> allServiceMap;
-    public SimpleServiceProvider(List<String> classNameList) {
+    public XmlServiceProvider(List<String> classNameList) {
         allServiceMap = new HashMap<>();
         try {
             for (String className : classNameList) {
@@ -27,11 +24,7 @@ public class SimpleServiceProvider implements IServiceProvider {
                     allServiceMap.put(rpcService.value().getName(), clazzObject);
                 }
             }
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
-        } catch (InstantiationException e) {
+        } catch (Exception e) {
             throw new IllegalStateException(e);
         }
     }

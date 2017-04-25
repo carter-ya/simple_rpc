@@ -7,6 +7,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -30,6 +31,9 @@ public class ClientResponseHandler extends SimpleChannelInboundHandler<ResponseP
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.channel().close();
+        if (cause instanceof InvocationTargetException) {
+            cause = cause.getCause();
+        }
         logger.error("客户端接收服务端响应出错:" + cause.getMessage(), cause);
     }
 }

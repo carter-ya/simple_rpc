@@ -4,16 +4,17 @@ import org.dom4j.Element;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
- * 默认实现的注册中心
+ * xml注册中心
  *
- * Created by liukefeng on 2017-04-23.
+ * Created by LiuKeFeng on 2017-04-23.
  */
-public class SimpleRegisterCenter implements IRegisterCenter {
+public class XmlRegisterCenter implements IRegisterCenter {
     private Map<String, List<ServiceNode>> serviceNodeMap;
-    private Random random = new Random();
+    private Random random = ThreadLocalRandom.current();
 
     @Override
     public ServiceNode getAvailableServiceNode(String serviceNodeName) throws NoSuchElementException {

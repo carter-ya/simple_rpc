@@ -9,6 +9,8 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * 请求协议解析器
  *
@@ -50,6 +52,9 @@ public class RequestProtocolDecoder extends LengthFieldBasedFrameDecoder {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.channel().close();
+        if (cause instanceof InvocationTargetException) {
+            cause = cause.getCause();
+        }
         logger.error("请求协议解码失败:" + cause.getMessage(), cause);
     }
 
