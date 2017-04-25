@@ -1,5 +1,6 @@
 package com.ifengxue.rpc.protocol;
 
+import java.rmi.RemoteException;
 import java.util.Objects;
 
 /**
@@ -11,7 +12,7 @@ public class ResponseProtocol {
     /** 客户端请求时的sessionID */
     private String sessionID;
     /** 服务端抛出的异常 */
-    private Throwable error;
+    private ExceptionProtocol exceptionProtocol;
     /** 调用结果 */
     private Object invokeResult;
     private ResponseProtocol() {}
@@ -20,8 +21,8 @@ public class ResponseProtocol {
         return sessionID;
     }
 
-    public Throwable getError() {
-        return error;
+    public ExceptionProtocol getExceptionProtocol() {
+        return exceptionProtocol;
     }
 
     public Object getInvokeResult() {
@@ -32,7 +33,7 @@ public class ResponseProtocol {
     public String toString() {
         return "ResponseProtocol{" +
                 "sessionID='" + sessionID + '\'' +
-                ", error=" + error +
+                ", exceptionProtocol=" + exceptionProtocol +
                 ", invokeResult=" + invokeResult +
                 '}';
     }
@@ -49,8 +50,8 @@ public class ResponseProtocol {
             return builder;
         }
 
-        public Builder setError(Throwable error) {
-            responseProtocol.error = error;
+        public Builder setExceptionProtocol(ExceptionProtocol exceptionProtocol) {
+            responseProtocol.exceptionProtocol = exceptionProtocol;
             return this;
         }
 

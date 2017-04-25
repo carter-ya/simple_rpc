@@ -16,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 public class KryoSerializer implements ISerializer {
     public <T> byte[] serialize(T object) {
         Kryo kryo = new Kryo();
-        kryo.register(Throwable.class, new JavaSerializer());
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Output output = new Output(byteArrayOutputStream);
         kryo.writeClassAndObject(output, object);
@@ -27,7 +26,6 @@ public class KryoSerializer implements ISerializer {
 
     public <T> T deserialize(byte[] buffer) {
         Kryo kryo = new Kryo();
-        kryo.register(Throwable.class, new JavaSerializer());
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
         Input input = new Input(byteArrayInputStream);
         input.close();

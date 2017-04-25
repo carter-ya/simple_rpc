@@ -77,7 +77,7 @@ public class ServerRequestProtocolHandler extends SimpleChannelInboundHandler<Re
         //响应客户端最终结果
         ctx.writeAndFlush(responseContext);
         logger.info("客户端:{}请求耗时:{}ms", context.getRequestProtocol().getSessionID(),
-                (Long)responseContext.getBindAttribute(ResponseContext.REQUEST_OUT_TIME_MILLIS_KEY) - (Long)responseContext.getBindAttribute(ResponseContext.REQUEST_IN_TIME_MILLIS_KEY));
+                (long)responseContext.getBindAttribute(ResponseContext.REQUEST_OUT_TIME_MILLIS_KEY) - (long)responseContext.getBindAttribute(ResponseContext.REQUEST_IN_TIME_MILLIS_KEY));
     }
 
     private void invokeInterceptors(ResponseContext context, List<Interceptor> interceptors, Interceptor.InterceptorTypeEnum interceptorTypeEnum) {

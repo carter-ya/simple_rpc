@@ -7,6 +7,8 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 /**
  * 响应协议编码器
  *
@@ -19,7 +21,7 @@ public class ResponseProtocolEncoder extends MessageToByteEncoder<ResponseContex
         logger.info("开始发送客户端:{}的响应", responseContext.getRequestSessionID());
         byte[] buffer = responseContext.getRequestSerializerTypeEnum().getSerializer().serialize(ResponseProtocol.Builder
                 .newBuilder(responseContext.getRequestSessionID())
-                .setError(responseContext.getResponseError())
+                .setExceptionProtocol(Optional.ofNullable(responseContext.getResponseError()).map(ExceptionProtocol::fromThrowable).orElse(null))
                 .setInvokeResult(responseContext.getInvokeResult())
                 .build());
         if (responseContext.getRequestCompressTypeEnum() != CompressTypeEnum.UNCOMPRESS) {
