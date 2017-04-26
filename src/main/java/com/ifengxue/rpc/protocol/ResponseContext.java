@@ -19,6 +19,7 @@ public class ResponseContext {
     public static final String REQUEST_IN_TIME_MILLIS_KEY = "request_in_time_millis_key";
     /** 请求离开时的时间戳 */
     public static final String REQUEST_OUT_TIME_MILLIS_KEY = "request_out_time_millis_key";
+    private static Method $echoMethod;
     /** 响应的错误堆栈 */
     private Throwable responseError;
     /** 请求上下文 */
@@ -30,12 +31,22 @@ public class ResponseContext {
 
     private Class<?> requestClass;
     private Method requestMethod;
+    static {
+        try {
+            $echoMethod = EchoService.class.getMethod("$echo", String.class);
+        } catch (NoSuchMethodException e) {
+        }
+    }
     private ResponseContext() {}
     public ResponseContext(RequestContext requestContext) {
         this.requestContext = requestContext;
         try {
             requestClass = Class.forName(requestContext.getRequestProtocol().getClassName());
-            requestMethod = requestClass.getMethod(requestContext.getRequestProtocol().getMethodName(), requestContext.getRequestProtocol().getParameterTypes());
+            if (requestContext.getRequestProtocol().getMethodName().equals("$echo")) {
+                requestMethod = $echoMethod;
+            } else {
+                requestMethod = requestClass.getMethod(requestContext.getRequestProtocol().getMethodName(), requestContext.getRequestProtocol().getParameterTypes());
+            }
         } catch (Exception e) {
             throw new ProtocolException("请求的服务或方法不存在:" + e.getMessage(), e);
         }

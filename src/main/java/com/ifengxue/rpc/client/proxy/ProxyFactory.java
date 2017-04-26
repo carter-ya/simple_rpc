@@ -1,5 +1,7 @@
 package com.ifengxue.rpc.client.proxy;
 
+import com.ifengxue.rpc.protocol.EchoService;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Map;
@@ -23,7 +25,7 @@ public final class ProxyFactory {
     public static <T> T create(Class<T> serviceInterface, String serviceNodeName) {
         return (T) CACHED_SERVICE_PROXY_MAP.computeIfAbsent(serviceInterface, clazz -> {
             InvocationHandler handler = new SimpleServiceProxy(clazz, serviceNodeName);
-            return Proxy.newProxyInstance(ProxyFactory.class.getClassLoader(), new Class<?>[]{serviceInterface}, handler);
+            return Proxy.newProxyInstance(ProxyFactory.class.getClassLoader(), new Class<?>[]{serviceInterface, EchoService.class}, handler);
         });
     }
 }

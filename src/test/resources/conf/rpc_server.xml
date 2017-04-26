@@ -11,5 +11,6 @@
     </register-center>-->
     <interceptors>
         <interceptor class="com.ifengxue.rpc.server.interceptor.BeanValidateInterceptor" />
+        <interceptor class="com.ifengxue.rpc.server.interceptor.EchoInterceptor" />
     </interceptors>
 </rpc-server>

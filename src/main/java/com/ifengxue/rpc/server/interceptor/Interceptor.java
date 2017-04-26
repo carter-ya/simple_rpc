@@ -22,10 +22,9 @@ public interface Interceptor extends Comparable<Interceptor> {
      * 执行拦截器，当拦截器返回值不为<code>null</code>则结束后续执行，直接返回结果
      * @param context 响应上下文
      * @param interceptorTypeEnum 当前正在执行的拦截器类型
-     * @return
      * @throws Exception
      */
-    ResponseContext intercept(ResponseContext context, InterceptorTypeEnum interceptorTypeEnum) throws Exception;
+    void intercept(ResponseContext context, InterceptorTypeEnum interceptorTypeEnum) throws Exception;
 
     /**
      * 返回关注的拦截器类型

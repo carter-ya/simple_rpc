@@ -8,7 +8,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 /**
  * 默认实现的{@link Channel}池
  *
- * Created by liuke on 2017-04-23.
+ * Created by LiuKeFeng on 2017-04-23.
  */
 public class SimpleChannelPool extends GenericKeyedObjectPool<String, Channel> implements IChannelPool {
     private final IRegisterCenter registerCenter;

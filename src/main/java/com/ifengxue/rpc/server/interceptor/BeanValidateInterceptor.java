@@ -44,10 +44,10 @@ public class BeanValidateInterceptor implements Interceptor {
     }
 
     @Override
-    public ResponseContext intercept(ResponseContext context, InterceptorTypeEnum interceptorTypeEnum) throws Exception {
+    public void intercept(ResponseContext context, InterceptorTypeEnum interceptorTypeEnum) throws Exception {
         Object[] params = context.getRequestParameters();
         if (params == null) {
-            return context;
+            return;
         }
         for (Object param : params) {
             Set<ConstraintViolation<Object>> violationSet = validator.validate(param);
@@ -60,7 +60,7 @@ public class BeanValidateInterceptor implements Interceptor {
                 break;
             }
         }
-        return context;
+        return;
     }
 
     @Override
