@@ -4,6 +4,11 @@
     <services>
         <service class="com.ifengxue.rpc.demo.DemoService" />
     </services>
+<!--    <register-center class="com.ifengxue.rpc.server.register.ZookeeperRegisterCenter">
+        <property name="connectionString" value="172.17.149.195:3888,172.17.149.195:5888,172.17.149.195:7888" />
+        <property name="baseSleepTimeMS" value="1000" />
+        <property name="maxRetries" value="3" />
+    </register-center>-->
     <interceptors>
         <interceptor class="com.ifengxue.rpc.server.interceptor.BeanValidateInterceptor" />
     </interceptors>

@@ -1,6 +1,7 @@
 package com.ifengxue.rpc.server;
 
 import com.ifengxue.rpc.factory.ServerConfigFactory;
+import com.ifengxue.rpc.server.handle.ServerSignalHandler;
 import com.ifengxue.rpc.util.Param;
 import com.ifengxue.rpc.util.ParamHelper;
 
@@ -18,5 +19,8 @@ public class ServerApp {
         ServerConfigFactory.initConfigFactory(paramMap.get("conf"));
         IRpcServer rpcServer = new SimpleRpcServer();
         rpcServer.start();
+
+        //响应退出信号
+        sun.misc.Signal.handle(new sun.misc.Signal("TERM"), new ServerSignalHandler(rpcServer));
     }
 }

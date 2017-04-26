@@ -3,6 +3,7 @@ package com.ifengxue.rpc.factory;
 import com.ifengxue.rpc.server.handle.IInvokeHandler;
 import com.ifengxue.rpc.server.handle.MethodInvokeHandler;
 import com.ifengxue.rpc.server.interceptor.Interceptor;
+import com.ifengxue.rpc.server.register.IRegisterCenter;
 import com.ifengxue.rpc.server.service.IServiceProvider;
 import com.ifengxue.rpc.server.service.XmlServiceProvider;
 import org.dom4j.Document;
@@ -76,6 +77,18 @@ public class ServerConfigFactory {
                     LOGGER.info("register interceptor:" + interceptor.getClass().getName());
                     interceptors.add(interceptor);
                 }
+            }
+            //初始化注册中心
+            Element registerCenterElement = rootElement.element("register-center");
+            if (registerCenterElement != null) {
+                IRegisterCenter registerCenter = (IRegisterCenter) Class.forName(registerCenterElement.attributeValue("class")).newInstance();
+                registerCenter.init(registerCenterElement);
+                registerCenter.register(serviceProperties.getProperty(
+                        SERVER_SERVICE_NAME, DEFAULT_SERVER_SERVICE_NAME),
+                        serviceProperties.getProperty(SERVER_SERVICE_BIND_HOST, DEFAULT_SERVER_SERVICE_BIND_HOST),
+                        Integer.parseInt(serviceProperties.getProperty(SERVER_SERVICE_BIND_PORT, DEFAULT_SERVER_SERVICE_BIND_PORT)));
+            } else {
+                LOGGER.warn("当前没有注册中心");
             }
         } catch (Exception e) {
             throw new IllegalStateException("服务端初始化失败:" + e.getMessage(), e);

@@ -4,6 +4,7 @@
     <services>
         <service class="" />
     </services>
+    <register-center class="" />
     <interceptors>
         <interceptor class="com.ifengxue.rpc.server.interceptor.BeanValidateInterceptor" />
     </interceptors>
