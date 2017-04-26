@@ -1,5 +1,7 @@
 package com.ifengxue.rpc.factory;
 
+import com.ifengxue.rpc.server.handle.IInvokeHandler;
+import com.ifengxue.rpc.server.handle.MethodInvokeHandler;
 import com.ifengxue.rpc.server.interceptor.Interceptor;
 import com.ifengxue.rpc.server.service.IServiceProvider;
 import com.ifengxue.rpc.server.service.XmlServiceProvider;
@@ -86,6 +88,10 @@ public class ServerConfigFactory {
 
     public IServiceProvider getServiceProvider() {
         return new XmlServiceProvider(new ArrayList<>(classNames));
+    }
+
+    public IInvokeHandler getInvokeHandler() {
+        return new MethodInvokeHandler();
     }
 
     public String getServiceName() {

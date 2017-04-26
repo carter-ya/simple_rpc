@@ -22,7 +22,7 @@ public class ResponseContext {
     /** 响应的错误堆栈 */
     private Throwable responseError;
     /** 请求上下文 */
-    private final RequestContext requestContext;
+    private RequestContext requestContext;
     /** 方法调用结果 */
     private Object invokeResult;
     /** 绑定在响应上下文中的属性：可以在所有拦截器中读取 */
@@ -30,17 +30,28 @@ public class ResponseContext {
 
     private Class<?> requestClass;
     private Method requestMethod;
-
+    private ResponseContext() {}
     public ResponseContext(RequestContext requestContext) {
         this.requestContext = requestContext;
         try {
             requestClass = Class.forName(requestContext.getRequestProtocol().getClassName());
             requestMethod = requestClass.getMethod(requestContext.getRequestProtocol().getMethodName(), requestContext.getRequestProtocol().getParameterTypes());
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException(e);
+        } catch (Exception e) {
+            throw new ProtocolException("请求的服务或方法不存在:" + e.getMessage(), e);
         }
+    }
+
+    /**
+     * 异常响应结果上下文
+     * @param requestContext
+     * @param e
+     * @return
+     */
+    public static ResponseContext newExceptionResponseContext(RequestContext requestContext, Exception e) {
+        ResponseContext responseContext = new ResponseContext();
+        responseContext.requestContext = requestContext;
+        responseContext.responseError = e;
+        return responseContext;
     }
 
     public int getRequestVersion() {
