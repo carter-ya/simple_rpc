@@ -33,7 +33,7 @@ public class ResponseContext {
     private Method requestMethod;
     static {
         try {
-            $echoMethod = EchoService.class.getMethod("$echo", String.class);
+            $echoMethod = IEchoService.class.getMethod("$echo", String.class);
         } catch (NoSuchMethodException e) {
         }
     }

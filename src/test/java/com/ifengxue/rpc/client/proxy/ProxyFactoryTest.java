@@ -3,7 +3,7 @@ package com.ifengxue.rpc.client.proxy;
 import com.ifengxue.rpc.demo.IDemoService;
 import com.ifengxue.rpc.demo.ValidateBean;
 import com.ifengxue.rpc.client.factory.ClientConfigFactory;
-import com.ifengxue.rpc.protocol.EchoService;
+import com.ifengxue.rpc.protocol.IEchoService;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Test;
 
@@ -53,7 +53,7 @@ public class ProxyFactoryTest {
         }
         bean.setAge(10);
         demoService.validate(bean);
-        EchoService echoService = (EchoService) demoService;
+        IEchoService echoService = (IEchoService) demoService;
         System.out.println(echoService.$echo("$echo"));
     }
 }

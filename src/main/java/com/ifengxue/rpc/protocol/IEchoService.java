@@ -5,7 +5,7 @@ package com.ifengxue.rpc.protocol;
  *
  * Created by LiuKeFeng on 2017-04-26.
  */
-public interface EchoService {
+public interface IEchoService {
     /**
      * 回声测试
      * @param echo 回声
