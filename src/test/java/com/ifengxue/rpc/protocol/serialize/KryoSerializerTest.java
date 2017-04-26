@@ -1,4 +1,4 @@
-package com.ifengxue.rpc.serialize;
+package com.ifengxue.rpc.protocol.serialize;
 
 import org.junit.Test;
 

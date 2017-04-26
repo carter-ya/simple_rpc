@@ -2,7 +2,7 @@ package com.ifengxue.rpc.client.proxy;
 
 import com.ifengxue.rpc.protocol.ReceiveTimeoutException;
 import com.ifengxue.rpc.client.pool.IChannelPool;
-import com.ifengxue.rpc.factory.ClientConfigFactory;
+import com.ifengxue.rpc.client.factory.ClientConfigFactory;
 import com.ifengxue.rpc.protocol.RequestProtocol;
 import com.ifengxue.rpc.protocol.ResponseProtocol;
 import io.netty.channel.Channel;

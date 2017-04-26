@@ -1,6 +1,6 @@
 package com.ifengxue.rpc.server;
 
-import com.ifengxue.rpc.factory.ServerConfigFactory;
+import com.ifengxue.rpc.server.factory.ServerConfigFactory;
 import com.ifengxue.rpc.server.handle.ServerSignalHandler;
 import com.ifengxue.rpc.util.Param;
 import com.ifengxue.rpc.util.ParamHelper;

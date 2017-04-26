@@ -1,7 +1,7 @@
 package com.ifengxue.rpc.protocol.enums;
 
-import com.ifengxue.rpc.compress.DeflaterCompress;
-import com.ifengxue.rpc.compress.ICompress;
+import com.ifengxue.rpc.protocol.compress.DeflaterCompress;
+import com.ifengxue.rpc.protocol.compress.ICompress;
 import com.ifengxue.rpc.protocol.ProtocolException;
 
 import java.util.Arrays;

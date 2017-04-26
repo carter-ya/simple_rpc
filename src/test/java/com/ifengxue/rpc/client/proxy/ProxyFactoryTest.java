@@ -2,7 +2,7 @@ package com.ifengxue.rpc.client.proxy;
 
 import com.ifengxue.rpc.demo.IDemoService;
 import com.ifengxue.rpc.demo.ValidateBean;
-import com.ifengxue.rpc.factory.ClientConfigFactory;
+import com.ifengxue.rpc.client.factory.ClientConfigFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Test;
 

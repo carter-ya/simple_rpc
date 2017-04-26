@@ -1,4 +1,4 @@
-package com.ifengxue.rpc.compress;
+package com.ifengxue.rpc.protocol.compress;
 
 /**
  * 压缩/解压缩接口

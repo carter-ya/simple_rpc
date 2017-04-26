@@ -1,4 +1,4 @@
-package com.ifengxue.rpc.factory;
+package com.ifengxue.rpc.client.factory;
 
 import com.ifengxue.rpc.client.pool.ChannelPoolConfig;
 import com.ifengxue.rpc.client.pool.IChannelPool;

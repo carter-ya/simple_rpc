@@ -1,4 +1,4 @@
-package com.ifengxue.rpc.compress;
+package com.ifengxue.rpc.protocol.compress;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

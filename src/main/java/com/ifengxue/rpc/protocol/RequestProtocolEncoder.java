@@ -1,9 +1,9 @@
 package com.ifengxue.rpc.protocol;
 
-import com.ifengxue.rpc.factory.ClientConfigFactory;
+import com.ifengxue.rpc.client.factory.ClientConfigFactory;
 import com.ifengxue.rpc.protocol.enums.CompressTypeEnum;
 import com.ifengxue.rpc.protocol.enums.SerializerTypeEnum;
-import com.ifengxue.rpc.serialize.ISerializer;
+import com.ifengxue.rpc.protocol.serialize.ISerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;

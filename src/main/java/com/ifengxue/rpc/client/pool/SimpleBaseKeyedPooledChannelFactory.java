@@ -2,7 +2,7 @@ package com.ifengxue.rpc.client.pool;
 
 import com.ifengxue.rpc.client.ClientResponseHandler;
 import com.ifengxue.rpc.client.register.IRegisterCenter;
-import com.ifengxue.rpc.factory.ClientConfigFactory;
+import com.ifengxue.rpc.client.factory.ClientConfigFactory;
 import com.ifengxue.rpc.protocol.RequestProtocolEncoder;
 import com.ifengxue.rpc.protocol.ResponseProtocolDecoder;
 import io.netty.bootstrap.Bootstrap;

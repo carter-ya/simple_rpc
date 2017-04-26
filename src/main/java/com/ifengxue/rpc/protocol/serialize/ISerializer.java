@@ -1,4 +1,4 @@
-package com.ifengxue.rpc.serialize;
+package com.ifengxue.rpc.protocol.serialize;
 
 /**
  *  序列化与反序列化接口

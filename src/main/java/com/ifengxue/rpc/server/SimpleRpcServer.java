@@ -1,6 +1,6 @@
 package com.ifengxue.rpc.server;
 
-import com.ifengxue.rpc.factory.ServerConfigFactory;
+import com.ifengxue.rpc.server.factory.ServerConfigFactory;
 import com.ifengxue.rpc.protocol.RequestProtocolDecoder;
 import com.ifengxue.rpc.protocol.ResponseProtocolEncoder;
 import io.netty.bootstrap.ServerBootstrap;

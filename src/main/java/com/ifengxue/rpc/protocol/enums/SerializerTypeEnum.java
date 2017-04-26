@@ -1,8 +1,8 @@
 package com.ifengxue.rpc.protocol.enums;
 
 import com.ifengxue.rpc.protocol.ProtocolException;
-import com.ifengxue.rpc.serialize.ISerializer;
-import com.ifengxue.rpc.serialize.KryoSerializer;
+import com.ifengxue.rpc.protocol.serialize.ISerializer;
+import com.ifengxue.rpc.protocol.serialize.KryoSerializer;
 
 import java.util.Arrays;
 
