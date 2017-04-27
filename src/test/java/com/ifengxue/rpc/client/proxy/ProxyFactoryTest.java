@@ -60,6 +60,7 @@ public class ProxyFactoryTest {
         }
         bean.setAge(10);
         bean = demoService.validate(bean);
+        System.out.println(demoService.echo(new Date()));
         System.out.println(bean);
         IEchoService echoService = (IEchoService) demoService;
         System.out.println(echoService.$echo("Hello $echo!"));

@@ -1,12 +1,14 @@
 package com.ifengxue.rpc.server.interceptor;
 
 import com.ifengxue.rpc.protocol.ResponseContext;
+import com.ifengxue.rpc.server.annotation.BeanValidate;
+import com.ifengxue.rpc.server.factory.ServerConfigFactory;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,28 +17,8 @@ import java.util.Set;
  * Created by LiuKeFeng on 2017-04-25.
  */
 public class BeanValidateInterceptor implements Interceptor {
-    public static final Set<Class<?>> PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET = new HashSet<>();
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-
-    static  {
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(byte.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(short.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(int.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(long.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(float.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(double.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(char.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(boolean.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(Byte.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(Short.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(Integer.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(Long.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(Float.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(Double.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(Character.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(Boolean.class);
-        PRIMIVE_AND_WRAPPER_AND_STRING_CALASS_SET.add(String.class);
-    }
+    private final Map<String, Class<?>> proxyClassMap = ServerConfigFactory.getInstance().getServiceProvider().findAllProxyClass();
 
     @Override
     public int getPriority() {
@@ -49,6 +31,16 @@ public class BeanValidateInterceptor implements Interceptor {
         if (params == null) {
             return;
         }
+
+        //检查是否启用Bean验证
+        Class<?> proxyClass = proxyClassMap.get(context.getRequestClassName());
+        Method method = context.getRequestMethod();
+        BeanValidate methodBeanValidate = method.getAnnotation(BeanValidate.class);
+        BeanValidate classBeanValidate = proxyClass.getAnnotation(BeanValidate.class);
+        if (!isEnableBeanValidate(methodBeanValidate, classBeanValidate)) {
+            return;
+        }
+
         for (Object param : params) {
             Set<ConstraintViolation<Object>> violationSet = validator.validate(param);
             if (!violationSet.isEmpty()) {
@@ -66,5 +58,15 @@ public class BeanValidateInterceptor implements Interceptor {
     @Override
     public InterceptorTypeEnum[] getInterceptorTypeEnums() {
         return new InterceptorTypeEnum[] {InterceptorTypeEnum.BEFORE};
+    }
+
+    private boolean isEnableBeanValidate(BeanValidate methodBeanValidate, BeanValidate classBeanValidate) {
+        if (methodBeanValidate != null && methodBeanValidate.value()) {
+            return true;
+        }
+        if (classBeanValidate != null && classBeanValidate.value()) {
+            return true;
+        }
+        return false;
     }
 }

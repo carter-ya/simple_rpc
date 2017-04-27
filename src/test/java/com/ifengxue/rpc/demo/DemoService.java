@@ -1,6 +1,7 @@
 package com.ifengxue.rpc.demo;
 
 import com.ifengxue.rpc.protocol.annotation.RpcService;
+import com.ifengxue.rpc.server.annotation.BeanValidate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,7 @@ public class DemoService implements IDemoService {
     }
 
     @Override
+    @BeanValidate
     public ValidateBean validate(ValidateBean bean) {
         return bean;
     }

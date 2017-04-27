@@ -7,6 +7,9 @@ public interface IDemoService {
     void sayHelloWorld();
     long currentServerTime();
     String echo(String echo);
+    default Object echo(Object echo) {
+        return echo;
+    }
     void testThrowException() throws Exception;
     ValidateBean validate(ValidateBean bean);
 }
