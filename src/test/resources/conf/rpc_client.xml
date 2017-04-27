@@ -32,4 +32,10 @@
         minCompressFrameLength:当帧的长度>=该值则自动压缩(前提是compress值不是uncompress)
     -->
     <protocol serialize="kryo"  compress="deflater" minCompressFrameLength="3145728"/>
+    <async>
+        <service class="com.ifengxue.rpc.demo.IDemoService">
+            <method name="waitForMe" async="true" />
+            <method name="onlyInvokeNotNeedReturn" async="true" return="false" />
+        </service>
+    </async>
 </rpc-client>

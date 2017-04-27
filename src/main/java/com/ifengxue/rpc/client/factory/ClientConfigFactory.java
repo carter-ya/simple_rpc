@@ -1,5 +1,6 @@
 package com.ifengxue.rpc.client.factory;
 
+import com.ifengxue.rpc.client.async.AsyncMethod;
 import com.ifengxue.rpc.client.pool.ChannelPoolConfig;
 import com.ifengxue.rpc.client.pool.IChannelPool;
 import com.ifengxue.rpc.client.pool.SimpleChannelPool;
@@ -15,10 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
+ *
+ * 客户端配置工厂
  * Created by LiuKeFeng on 2017-04-21.
  */
 public class ClientConfigFactory {
@@ -34,6 +37,7 @@ public class ClientConfigFactory {
     private static IRegisterCenter registerCenter;
     private static ChannelPoolConfig channelPoolConfig = new ChannelPoolConfig();
     private static Properties protocolProperties = new Properties();
+    private static Map<Class<?>, List<AsyncMethod>> asyncClassMethodMap = new HashMap<>();
     private ClientConfigFactory() {}
 
     public static synchronized void initConfigFactory(String config) {
@@ -71,6 +75,31 @@ public class ClientConfigFactory {
                 protocolElement.attributeValue(MIN_COMPRESS_FRAME_LENGTH_KEY, DEFAULT_MIN_COMPRESS_FRAME_LENGTH);
                 LOGGER.info("初始化协议成功...");
             }
+
+            //初始化需要异步请求的方法列表
+            Element asyncElement = rootElement.element("async");
+            if (asyncElement != null && Boolean.parseBoolean(asyncElement.attributeValue("async", "true"))) {
+                List<Element> serviceElements = asyncElement.elements("service");
+                for (Element serviceElement : serviceElements) {
+                    Class<?> clazz = Class.forName(serviceElement.attributeValue("class"));
+                    List<Element> methodElements = serviceElement.elements("method");
+                    List<AsyncMethod> asyncMethods = new ArrayList<>(methodElements.size());
+                    for (Element methodElement : methodElements) {
+                        asyncMethods.add(new AsyncMethod(clazz,
+                                methodElement.attributeValue("name"),
+                                Boolean.parseBoolean(methodElement.attributeValue("async", "true")),
+                                Boolean.parseBoolean(methodElement.attributeValue("sent", "false")),
+                                Boolean.parseBoolean(methodElement.attributeValue("return", "true"))));
+                    }
+                    asyncClassMethodMap.put(clazz, asyncMethods.stream().filter(AsyncMethod::isAsync).collect(Collectors.toList()));
+                }
+            }
+            asyncClassMethodMap.forEach((clazzKey, asyncMethodListValue) -> {
+                if (!asyncMethodListValue.isEmpty()) {
+                    LOGGER.info("异步请求服务:{},方法列表[{}]", clazzKey.getSimpleName(),
+                            asyncMethodListValue.stream().map(AsyncMethod::getMethodName).collect(Collectors.joining(", ")));
+                }
+            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -80,26 +109,51 @@ public class ClientConfigFactory {
         return INSTANCE;
     }
 
+    /**
+     * 当发送的包>=该值，则自动压缩
+     * @return
+     * @see #getCompressTypeEnum()
+     */
     public long minCompressFrameLength() {
         return Long.parseLong(protocolProperties.getProperty(MIN_COMPRESS_FRAME_LENGTH_KEY, DEFAULT_MIN_COMPRESS_FRAME_LENGTH));
     }
 
+    /**
+     * 获取客户端使用的序列化类型
+     * @return
+     */
     public SerializerTypeEnum getSerializerTypeEnum() {
         return SerializerTypeEnum.getEnumByName(protocolProperties.getProperty(SERIALIZE_TYPE_KEY, DEFAULT_SERIALIZE_TYPE));
     }
 
+    /**
+     * 获取客户端使用的压缩类型
+     * @return
+     */
     public CompressTypeEnum getCompressTypeEnum() {
         return CompressTypeEnum.getEnumByName(protocolProperties.getProperty(COMPRESS_TYPE_KEY, DEFAULT_COMPRESS_TYPE));
     }
 
+    /**
+     * 连接池实现
+     * @return
+     */
     public IChannelPool getChannelPool() {
         return new SimpleChannelPool(newKeyedChannelPoolConfig(), getRegisterCenter());
     }
 
+    /**
+     * 注册中心实现
+     * @return
+     */
     public IRegisterCenter getRegisterCenter() {
         return registerCenter;
     }
 
+    /**
+     * 连接池配置
+     * @return
+     */
     public ChannelPoolConfig getChannelPoolConfig() {
         return channelPoolConfig;
     }
@@ -116,5 +170,13 @@ public class ClientConfigFactory {
         genericKeyedObjectPoolConfig.setTestOnBorrow(channelPoolConfig.isTestOnBorrow());
         genericKeyedObjectPoolConfig.setMaxWaitMillis(channelPoolConfig.getMaxWaitTimeout());
         return genericKeyedObjectPoolConfig;
+    }
+
+    /**
+     * 返回需要异步请求的方法列表
+     * @return
+     */
+    public Map<Class<?>, List<AsyncMethod>> getAsyncClassMethodMap() {
+        return Collections.unmodifiableMap(asyncClassMethodMap);
     }
 }

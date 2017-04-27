@@ -2,7 +2,6 @@ package com.ifengxue.rpc.client.proxy;
 
 import com.ifengxue.rpc.protocol.RequestProtocol;
 import com.ifengxue.rpc.protocol.enums.RequestProtocolTypeEnum;
-import io.netty.handler.timeout.TimeoutException;
 
 import java.lang.reflect.Method;
 import java.net.ConnectException;

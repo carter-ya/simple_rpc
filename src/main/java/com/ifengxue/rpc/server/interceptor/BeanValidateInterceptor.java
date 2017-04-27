@@ -52,7 +52,6 @@ public class BeanValidateInterceptor implements Interceptor {
                 break;
             }
         }
-        return;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.ifengxue.rpc.client;
 
-import com.ifengxue.rpc.client.proxy.IServiceProxy;
 import com.ifengxue.rpc.protocol.ResponseProtocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -19,12 +18,18 @@ public class ClientResponseHandler extends SimpleChannelInboundHandler<ResponseP
     private Logger logger = LoggerFactory.getLogger(getClass());
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ResponseProtocol responseProtocol) throws Exception {
-        logger.info("收到服务端对客户端{}的响应", responseProtocol.getSessionID());
-        BlockingQueue<ResponseProtocol> blockingQueue = IServiceProxy.CACHED_RESPONSE_PROTOCOL_MAP.get(responseProtocol.getSessionID());
+        String sessionID = responseProtocol.getSessionID();
+        logger.info("收到服务端对客户端{}的响应", sessionID);
+        BlockingQueue<ResponseProtocol> blockingQueue = RpcContext.CACHED_RESPONSE_PROTOCOL_MAP.get(sessionID);
         if (blockingQueue != null) {
             blockingQueue.put(responseProtocol);
         } else {
-            logger.warn("客户端[" + responseProtocol.getSessionID() + "]接收到服务端响应，但是客户端已经超时退出。");
+            if (RpcContext.CACHED_NOT_NEED_RETURN_RESULT_SET.contains(sessionID)) {
+                RpcContext.CACHED_NOT_NEED_RETURN_RESULT_SET.remove(sessionID);
+                RpcContext.CACHED_RESPONSE_PROTOCOL_MAP.remove(sessionID);
+                return;
+            }
+            logger.warn("客户端[" + sessionID + "]接收到服务端响应，但是客户端已经超时退出。");
         }
     }
 

@@ -1,16 +1,21 @@
 package com.ifengxue.rpc.client.proxy;
 
+import com.ifengxue.rpc.client.RpcContext;
 import com.ifengxue.rpc.demo.IDemoService;
 import com.ifengxue.rpc.demo.ValidateBean;
 import com.ifengxue.rpc.client.factory.ClientConfigFactory;
 import com.ifengxue.rpc.protocol.IEchoService;
 import org.apache.log4j.PropertyConfigurator;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by LiuKeFeng on 2017-04-22.
@@ -69,5 +74,23 @@ public class ProxyFactoryTest {
     @Test
     public void testInvokePrimitive() {
         demoService.currentServerTime();
+    }
+
+    @Test
+    public void testAsyncInvoke() throws ExecutionException, InterruptedException {
+        demoService.waitForMe(5);
+        TimeUnit.SECONDS.sleep(10);
+        Future<String> future = RpcContext.getInstance().getAndRemoveFuture();
+        System.out.println(System.currentTimeMillis());
+        System.out.println(future.get());
+        System.out.println(System.currentTimeMillis());
+    }
+
+    @Test
+    public void testOnlyInvoke() throws InterruptedException {
+        demoService.onlyInvokeNotNeedReturn(5);
+        TimeUnit.SECONDS.sleep(10);
+        Future<String> future = RpcContext.getInstance().getAndRemoveFuture();
+        Assert.assertEquals(null, future);
     }
 }

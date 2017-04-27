@@ -12,4 +12,8 @@ public interface IDemoService {
     }
     void testThrowException() throws Exception;
     ValidateBean validate(ValidateBean bean);
+
+    String waitForMe(long sleepSecond);
+
+    String onlyInvokeNotNeedReturn(long sleepSecond);
 }

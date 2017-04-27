@@ -5,6 +5,9 @@ import com.ifengxue.rpc.server.annotation.BeanValidate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by LiuKeFeng on 2017-04-24.
  */
@@ -37,6 +40,26 @@ public class DemoService implements IDemoService {
     @BeanValidate
     public ValidateBean validate(ValidateBean bean) {
         return bean;
+    }
+
+    @Override
+    public String waitForMe(long sleepSecond) {
+        try {
+            TimeUnit.SECONDS.sleep(sleepSecond);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "等了我" + sleepSecond + "秒";
+    }
+
+    @Override
+    public String onlyInvokeNotNeedReturn(long sleepSecond) {
+        try {
+            TimeUnit.SECONDS.sleep(sleepSecond);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "等了我" + sleepSecond + "秒";
     }
 
 }
