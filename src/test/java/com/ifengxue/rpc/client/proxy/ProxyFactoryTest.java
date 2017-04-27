@@ -9,12 +9,22 @@ import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by LiuKeFeng on 2017-04-22.
  */
 public class ProxyFactoryTest {
+    IDemoService demoService = ProxyFactory.create(IDemoService.class, "demo");
+    static {
+        try {
+            PropertyConfigurator.configure(URLDecoder.decode(ProxyFactoryTest.class.getClassLoader().getResource("conf/log4j_c.properties").getFile(), "UTF-8"));
+            ClientConfigFactory.initConfigFactory(URLDecoder.decode(ProxyFactoryTest.class.getClassLoader().getResource("conf/rpc_client.xml").getFile(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      *测试 {@link Object#toString()}, {@link Object#hashCode()} , {@link Object#equals(Object)} 代理
      */
@@ -28,11 +38,8 @@ public class ProxyFactoryTest {
 
     @Test
     public void testInvokeRpcMethod() throws UnsupportedEncodingException {
-        PropertyConfigurator.configure(URLDecoder.decode(ProxyFactoryTest.class.getClassLoader().getResource("conf/log4j_c.properties").getFile(), "UTF-8"));
-        ClientConfigFactory.initConfigFactory(URLDecoder.decode(ProxyFactoryTest.class.getClassLoader().getResource("conf/rpc_client.xml").getFile(), "UTF-8"));
-        IDemoService demoService = ProxyFactory.create(IDemoService.class, "demo");
         demoService.sayHelloWorld();
-        System.out.println("currentServerTime:" + demoService.currentServerTime());
+//        System.out.println("currentServerTime:" + demoService.currentServerTime());
         System.out.println("echo:" + demoService.echo("Hello Server!"));
         try {
             demoService.testThrowException();
@@ -43,17 +50,23 @@ public class ProxyFactoryTest {
         try {
             bean = demoService.validate(bean);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getCause().getMessage());
         }
         bean.setAge(9);
         try {
             demoService.validate(bean);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getCause().getMessage());
         }
         bean.setAge(10);
-        demoService.validate(bean);
+        bean = demoService.validate(bean);
+        System.out.println(bean);
         IEchoService echoService = (IEchoService) demoService;
-        System.out.println(echoService.$echo("$echo"));
+        System.out.println(echoService.$echo("Hello $echo!"));
+    }
+
+    @Test
+    public void testInvokePrimitive() {
+        demoService.currentServerTime();
     }
 }

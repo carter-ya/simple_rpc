@@ -13,4 +13,10 @@ public interface IServiceProvider {
      * @return
      */
     Map<String, Object> findAllServices();
+
+    /**
+     * 返回所有声称对外提供服务的代理Class对象
+     * @return
+     */
+    Map<String, Class<?>> findAllProxyClass();
 }

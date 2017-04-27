@@ -1,7 +1,9 @@
 package com.ifengxue.rpc.server.service;
 
 import com.ifengxue.rpc.protocol.annotation.RpcService;
+import com.ifengxue.rpc.server.factory.JavassistProxyFactory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,15 +15,18 @@ import java.util.Map;
  */
 public class XmlServiceProvider implements IServiceProvider {
     private final Map<String, Object> allServiceMap;
+    private final Map<String, Class<?>> allProxyClassMap;
     public XmlServiceProvider(List<String> classNameList) {
         allServiceMap = new HashMap<>();
+        allProxyClassMap = new HashMap<>();
         try {
             for (String className : classNameList) {
-                Class<?> clazz = Class.forName(className);
-                RpcService[] rpcServices = clazz.getAnnotationsByType(RpcService.class);
-                Object clazzObject = clazz.newInstance();
+                Object proxyInstance = JavassistProxyFactory.getProxyInstance(Class.forName(className));
+                Class<?> proxyClass = proxyInstance.getClass();
+                RpcService[] rpcServices = proxyClass.getAnnotationsByType(RpcService.class);
                 for (RpcService rpcService : rpcServices) {
-                    allServiceMap.put(rpcService.value().getName(), clazzObject);
+                    allServiceMap.put(rpcService.value().getName(), proxyInstance);
+                    allProxyClassMap.put(rpcService.value().getName(), proxyClass);
                 }
             }
         } catch (Exception e) {
@@ -30,6 +35,11 @@ public class XmlServiceProvider implements IServiceProvider {
     }
     @Override
     public Map<String, Object> findAllServices() {
-        return allServiceMap;
+        return Collections.unmodifiableMap(allServiceMap);
+    }
+
+    @Override
+    public Map<String, Class<?>> findAllProxyClass() {
+        return Collections.unmodifiableMap(allProxyClassMap);
     }
 }

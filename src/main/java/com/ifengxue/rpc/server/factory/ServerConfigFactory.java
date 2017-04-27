@@ -35,6 +35,7 @@ public class ServerConfigFactory {
     private static Properties serviceProperties = new Properties();
     private static List<String> classNames = new ArrayList<>();
     private static List<Interceptor> interceptors = new ArrayList<>();
+    private volatile IServiceProvider serviceProvider;
     private ServerConfigFactory() {}
     public static ServerConfigFactory getInstance() {
         return INSTANCE;
@@ -98,7 +99,14 @@ public class ServerConfigFactory {
     }
 
     public IServiceProvider getServiceProvider() {
-        return new XmlServiceProvider(new ArrayList<>(classNames));
+        if (serviceProvider == null) {
+            synchronized (this) {
+                if (serviceProvider == null) {
+                    serviceProvider = new XmlServiceProvider(new ArrayList<>(classNames));
+                }
+            }
+        }
+        return serviceProvider;
     }
 
     public IInvokeHandler getInvokeHandler() {

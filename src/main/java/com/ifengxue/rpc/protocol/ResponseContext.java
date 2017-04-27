@@ -3,6 +3,8 @@ package com.ifengxue.rpc.protocol;
 import com.ifengxue.rpc.protocol.enums.CompressTypeEnum;
 import com.ifengxue.rpc.protocol.enums.RequestProtocolTypeEnum;
 import com.ifengxue.rpc.protocol.enums.SerializerTypeEnum;
+import com.ifengxue.rpc.server.factory.ServerConfigFactory;
+import com.ifengxue.rpc.server.service.IServiceProvider;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ public class ResponseContext {
 
     private Class<?> requestClass;
     private Method requestMethod;
+    private final IServiceProvider serviceProvider = ServerConfigFactory.getInstance().getServiceProvider();
     static {
         try {
             $echoMethod = IEchoService.class.getMethod("$echo", String.class);
@@ -42,11 +45,12 @@ public class ResponseContext {
         this.requestContext = requestContext;
         try {
             requestClass = Class.forName(requestContext.getRequestProtocol().getClassName());
-            if (requestContext.getRequestProtocol().getMethodName().equals("$echo")) {
-                requestMethod = $echoMethod;
-            } else {
-                requestMethod = requestClass.getMethod(requestContext.getRequestProtocol().getMethodName(), requestContext.getRequestProtocol().getParameterTypes());
-            }
+            requestMethod = serviceProvider.findAllProxyClass().get(requestContext.getRequestProtocol().getClassName()).getMethod(requestContext.getRequestProtocol().getMethodName(), requestContext.getRequestProtocol().getParameterTypes());
+//            if (requestContext.getRequestProtocol().getMethodName().equals("$echo")) {
+//                requestMethod = $echoMethod;
+//            } else {
+//                requestMethod = requestClass.getMethod(requestContext.getRequestProtocol().getMethodName(), requestContext.getRequestProtocol().getParameterTypes());
+//            }
         } catch (Exception e) {
             throw new ProtocolException("请求的服务或方法不存在:" + e.getMessage(), e);
         }

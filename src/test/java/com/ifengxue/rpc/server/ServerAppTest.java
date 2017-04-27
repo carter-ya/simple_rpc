@@ -14,6 +14,7 @@ public class ServerAppTest {
     @Test
     public void testMain() throws UnsupportedEncodingException, InterruptedException {
         PropertyConfigurator.configure(URLDecoder.decode(ServerAppTest.class.getClassLoader().getResource("conf/log4j_s.properties").getFile(), "UTF-8"));
+        System.setProperty("rpc.debug", "true");
         ServerApp.main(new String[]{"--conf:" + URLDecoder.decode(ServerAppTest.class.getClassLoader().getResource("conf/rpc_server.xml").getFile(), "UTF-8")});
         TimeUnit.MINUTES.sleep(10);
     }

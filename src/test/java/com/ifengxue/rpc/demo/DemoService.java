@@ -1,12 +1,15 @@
 package com.ifengxue.rpc.demo;
 
 import com.ifengxue.rpc.protocol.annotation.RpcService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by LiuKeFeng on 2017-04-24.
  */
 @RpcService(IDemoService.class)
 public class DemoService implements IDemoService {
+    Logger logger = LoggerFactory.getLogger(getClass());
     @Override
     public void sayHelloWorld() {
         System.out.println("Hello World!");
@@ -14,7 +17,9 @@ public class DemoService implements IDemoService {
 
     @Override
     public long currentServerTime() {
-        return System.currentTimeMillis();
+        long current = System.currentTimeMillis();
+        logger.info("current:" + current);
+        return current;
     }
 
     @Override
@@ -31,4 +36,5 @@ public class DemoService implements IDemoService {
     public ValidateBean validate(ValidateBean bean) {
         return bean;
     }
+
 }
