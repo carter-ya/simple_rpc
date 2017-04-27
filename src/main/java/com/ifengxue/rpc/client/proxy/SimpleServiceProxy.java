@@ -3,11 +3,10 @@ package com.ifengxue.rpc.client.proxy;
 import com.ifengxue.rpc.client.RpcContext;
 import com.ifengxue.rpc.client.async.AsyncInvokeCallable;
 import com.ifengxue.rpc.client.async.AsyncMethod;
-import com.ifengxue.rpc.protocol.ReceiveTimeoutException;
+import com.ifengxue.rpc.client.util.RpcInvokeHelper;
 import com.ifengxue.rpc.client.pool.IChannelPool;
 import com.ifengxue.rpc.client.factory.ClientConfigFactory;
 import com.ifengxue.rpc.protocol.RequestProtocol;
-import com.ifengxue.rpc.protocol.ResponseProtocol;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,18 +55,7 @@ public class SimpleServiceProxy extends AbstractServiceProxy {
             //异步调用直接返回->不需要返回值
             return null;
         } else {
-            ResponseProtocol responseProtocol = RpcContext.CACHED_RESPONSE_PROTOCOL_MAP.get(requestProtocol.getSessionID()).poll(readTimeout, TimeUnit.MILLISECONDS);
-            RpcContext.CACHED_RESPONSE_PROTOCOL_MAP.remove(requestProtocol.getSessionID());
-            if (responseProtocol == null) {
-                throw new ReceiveTimeoutException("客户端[" + requestProtocol.getSessionID() + "]接收服务响应失败，等待时长:" + readTimeout + "ms");
-            }
-
-            // 抛出服务端抛出的异常
-            if (responseProtocol.getExceptionProtocol() != null) {
-                throw responseProtocol.getExceptionProtocol().asRemoteException();
-            }
-            //正常返回调用结果
-            return responseProtocol.getInvokeResult();
+            return RpcInvokeHelper.blockGetResult(requestProtocol.getSessionID(), readTimeout);
         }
     }
 
