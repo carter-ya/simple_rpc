@@ -1,6 +1,7 @@
 package com.ifengxue.rpc.client.proxy;
 
 import com.ifengxue.rpc.client.RpcContext;
+import com.ifengxue.rpc.client.async.AsyncRpcInvoker;
 import com.ifengxue.rpc.demo.IDemoService;
 import com.ifengxue.rpc.demo.ValidateBean;
 import com.ifengxue.rpc.client.factory.ClientConfigFactory;
@@ -78,19 +79,14 @@ public class ProxyFactoryTest {
 
     @Test
     public void testAsyncInvoke() throws ExecutionException, InterruptedException {
-        demoService.waitForMe(5);
+        Future<String> future = AsyncRpcInvoker.asyncForResult(() -> demoService.waitForMe(5));
         TimeUnit.SECONDS.sleep(10);
-        Future<String> future = RpcContext.getInstance().getAndRemoveFuture();
-        System.out.println(System.currentTimeMillis());
         System.out.println(future.get());
-        System.out.println(System.currentTimeMillis());
     }
 
     @Test
     public void testOnlyInvoke() throws InterruptedException {
-        demoService.onlyInvokeNotNeedReturn(5);
+        AsyncRpcInvoker.asyncForNoneResult(() -> demoService.waitForMe(5));
         TimeUnit.SECONDS.sleep(10);
-        Future<String> future = RpcContext.getInstance().getAndRemoveFuture();
-        Assert.assertEquals(null, future);
     }
 }

@@ -1,8 +1,8 @@
 package com.ifengxue.rpc.client.proxy;
 
 import com.ifengxue.rpc.client.RpcContext;
-import com.ifengxue.rpc.client.async.AsyncInvokeCallable;
-import com.ifengxue.rpc.client.async.AsyncMethod;
+import com.ifengxue.rpc.client.async.AsyncConsts;
+import com.ifengxue.rpc.client.async.AsyncRpcFuture;
 import com.ifengxue.rpc.client.util.RpcInvokeHelper;
 import com.ifengxue.rpc.client.pool.IChannelPool;
 import com.ifengxue.rpc.client.factory.ClientConfigFactory;
@@ -21,15 +21,9 @@ import java.util.concurrent.*;
  */
 public class SimpleServiceProxy extends AbstractServiceProxy {
     private static final long serialVersionUID = 6567739050249606630L;
-    private static final Map<Class<?>, List<AsyncMethod>> ASYNC_CLASS_METHODS_MAP = ClientConfigFactory.getInstance().getAsyncClassMethodMap();
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final IChannelPool channelPool = ClientConfigFactory.getInstance().getChannelPool();
     private final long readTimeout = ClientConfigFactory.getInstance().getChannelPoolConfig().getReadTimeout();
-    private final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(100, r -> {
-        Thread thread = new Thread(r);
-        thread.setName("Async Method Invoker");
-        return thread;
-    } );
     public SimpleServiceProxy(Class<?> interfaceClass, String serviceNodeName) {
         super(interfaceClass, serviceNodeName);
     }
@@ -42,21 +36,16 @@ public class SimpleServiceProxy extends AbstractServiceProxy {
             throw exception;
         }
 
-        AsyncMethod asyncMethod = ASYNC_CLASS_METHODS_MAP.getOrDefault(interfaceClass, Collections.emptyList())
-                .stream()
-                .filter(method -> method.getMethodName().equals(requestProtocol.getMethodName()))
-                .findAny()
-                .orElse(null);
-        if (asyncMethod != null) {
-            if (asyncMethod.isReturnWait()) {
-                Future<?> future = EXECUTOR_SERVICE.submit(new AsyncInvokeCallable(interfaceClass, requestProtocol));
-                RpcContext.getInstance().setFuture(future);
-            }
-            //异步调用直接返回->不需要返回值
+        // 执行异步调用
+        AsyncRpcFuture<?> callback = AsyncConsts.ASYNC_RPC_FUTURE_THREAD_LOCAL.get();
+        if (callback != null) {
+            callback.setSessionID(requestProtocol.getSessionID());
+            AsyncConsts.ASYNC_RPC_FUTURE_THREAD_LOCAL.remove();
+            AsyncConsts.ASYNC_RPC_FUTURE_SESSION_ID_MAP
+                    .put(requestProtocol.getSessionID(), callback);
             return null;
-        } else {
-            return RpcInvokeHelper.blockGetResult(requestProtocol.getSessionID(), readTimeout);
         }
+        return RpcInvokeHelper.blockGetResult(requestProtocol.getSessionID(), readTimeout);
     }
 
     /**

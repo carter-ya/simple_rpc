@@ -9,13 +9,22 @@ import java.io.Serializable;
  */
 public class AsyncMethod implements Serializable {
     private static final long serialVersionUID = 7178307560474490336L;
+    @Deprecated
     private Class<?> clazz;
+    @Deprecated
     private String methodName;
     private boolean async;
+    @Deprecated
     private boolean sent;
     private boolean returnWait;
     public AsyncMethod() {}
 
+    public AsyncMethod(boolean async, boolean returnWait) {
+        this.async = async;
+        this.returnWait = returnWait;
+    }
+
+    @Deprecated
     public AsyncMethod(Class<?> clazz, String methodName, boolean async, boolean sent, boolean returnWait) {
         this.clazz = clazz;
         this.methodName = methodName;
@@ -24,18 +33,22 @@ public class AsyncMethod implements Serializable {
         this.returnWait = returnWait;
     }
 
+    @Deprecated
     public Class<?> getClazz() {
         return clazz;
     }
 
+    @Deprecated
     public void setClazz(Class<?> clazz) {
         this.clazz = clazz;
     }
 
+    @Deprecated
     public String getMethodName() {
         return methodName;
     }
 
+    @Deprecated
     public void setMethodName(String methodName) {
         this.methodName = methodName;
     }
@@ -48,10 +61,12 @@ public class AsyncMethod implements Serializable {
         this.async = async;
     }
 
+    @Deprecated
     public boolean isSent() {
         return sent;
     }
 
+    @Deprecated
     public void setSent(boolean sent) {
         this.sent = sent;
     }

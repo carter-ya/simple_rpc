@@ -37,7 +37,6 @@ public class ClientConfigFactory {
     private static IRegisterCenter registerCenter;
     private static ChannelPoolConfig channelPoolConfig = new ChannelPoolConfig();
     private static Properties protocolProperties = new Properties();
-    private static Map<Class<?>, List<AsyncMethod>> asyncClassMethodMap = new HashMap<>();
     private ClientConfigFactory() {}
 
     public static synchronized void initConfigFactory(String config) {
@@ -75,31 +74,6 @@ public class ClientConfigFactory {
                 protocolElement.attributeValue(MIN_COMPRESS_FRAME_LENGTH_KEY, DEFAULT_MIN_COMPRESS_FRAME_LENGTH);
                 LOGGER.info("初始化协议成功...");
             }
-
-            //初始化需要异步请求的方法列表
-            Element asyncElement = rootElement.element("async");
-            if (asyncElement != null && Boolean.parseBoolean(asyncElement.attributeValue("async", "true"))) {
-                List<Element> serviceElements = asyncElement.elements("service");
-                for (Element serviceElement : serviceElements) {
-                    Class<?> clazz = Class.forName(serviceElement.attributeValue("class"));
-                    List<Element> methodElements = serviceElement.elements("method");
-                    List<AsyncMethod> asyncMethods = new ArrayList<>(methodElements.size());
-                    for (Element methodElement : methodElements) {
-                        asyncMethods.add(new AsyncMethod(clazz,
-                                methodElement.attributeValue("name"),
-                                Boolean.parseBoolean(methodElement.attributeValue("async", "true")),
-                                Boolean.parseBoolean(methodElement.attributeValue("sent", "false")),
-                                Boolean.parseBoolean(methodElement.attributeValue("return", "true"))));
-                    }
-                    asyncClassMethodMap.put(clazz, asyncMethods.stream().filter(AsyncMethod::isAsync).collect(Collectors.toList()));
-                }
-            }
-            asyncClassMethodMap.forEach((clazzKey, asyncMethodListValue) -> {
-                if (!asyncMethodListValue.isEmpty()) {
-                    LOGGER.info("异步请求服务:{},方法列表[{}]", clazzKey.getSimpleName(),
-                            asyncMethodListValue.stream().map(AsyncMethod::getMethodName).collect(Collectors.joining(", ")));
-                }
-            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -170,13 +144,5 @@ public class ClientConfigFactory {
         genericKeyedObjectPoolConfig.setTestOnBorrow(channelPoolConfig.isTestOnBorrow());
         genericKeyedObjectPoolConfig.setMaxWaitMillis(channelPoolConfig.getMaxWaitTimeout());
         return genericKeyedObjectPoolConfig;
-    }
-
-    /**
-     * 返回需要异步请求的方法列表
-     * @return
-     */
-    public Map<Class<?>, List<AsyncMethod>> getAsyncClassMethodMap() {
-        return Collections.unmodifiableMap(asyncClassMethodMap);
     }
 }

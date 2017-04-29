@@ -1,5 +1,7 @@
 package com.ifengxue.rpc.client;
 
+import com.ifengxue.rpc.client.async.AsyncConsts;
+import com.ifengxue.rpc.client.async.AsyncRpcFuture;
 import com.ifengxue.rpc.protocol.ResponseProtocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -20,16 +22,23 @@ public class ClientResponseHandler extends SimpleChannelInboundHandler<ResponseP
     protected void channelRead0(ChannelHandlerContext ctx, ResponseProtocol responseProtocol) throws Exception {
         String sessionID = responseProtocol.getSessionID();
         logger.info("收到服务端对客户端{}的响应", sessionID);
-        BlockingQueue<ResponseProtocol> blockingQueue = RpcContext.CACHED_RESPONSE_PROTOCOL_MAP.get(sessionID);
-        if (blockingQueue != null) {
-            blockingQueue.put(responseProtocol);
-        } else {
-            if (RpcContext.CACHED_NOT_NEED_RETURN_RESULT_SET.contains(sessionID)) {
-                RpcContext.CACHED_NOT_NEED_RETURN_RESULT_SET.remove(sessionID);
-                RpcContext.CACHED_RESPONSE_PROTOCOL_MAP.remove(sessionID);
-                return;
+
+        AsyncRpcFuture asyncRpcFuture = AsyncConsts.ASYNC_RPC_FUTURE_SESSION_ID_MAP.get(sessionID);
+        //异步调用方法
+        if (asyncRpcFuture != null) {
+            AsyncConsts.ASYNC_RPC_FUTURE_SESSION_ID_MAP.remove(sessionID);
+            //需要服务端返回值
+            if (asyncRpcFuture.getAsyncMethod().isReturnWait()) {
+                asyncRpcFuture.callback(responseProtocol);
             }
-            logger.warn("客户端[" + sessionID + "]接收到服务端响应，但是客户端已经超时退出。");
+        } else {
+            //同步调用方法
+            BlockingQueue<ResponseProtocol> blockingQueue = RpcContext.CACHED_RESPONSE_PROTOCOL_MAP.get(sessionID);
+            if (blockingQueue != null) {
+                blockingQueue.put(responseProtocol);
+            } else {
+                logger.warn("客户端[" + sessionID + "]接收到服务端响应，但是客户端已经超时退出。");
+            }
         }
     }
 
