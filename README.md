@@ -4,6 +4,6 @@
 > 开启这个功能需要在rpc_server.xml中配置这个拦截器，并给想要开启类的打注解[BeanValidate](https://github.com/liukefeng2008/simple_rpc/blob/master/src/main/java/com/ifengxue/rpc/server/annotation/BeanValidate.java)
 2. 每个接口自动实现回声测试接口[IEchoService](https://github.com/liukefeng2008/simple_rpc/blob/master/src/main/java/com/ifengxue/rpc/protocol/IEchoService.java)
 3. 支持客户端异步调用
-> 通过[RpcContext](https://github.com/liukefeng2008/simple_rpc/blob/master/src/main/java/com/ifengxue/rpc/client/RpcContext.java)获取异步调用结果
+> 通过[AsyncRpcInvoker](https://github.com/liukefeng2008/simple_rpc/blob/master/src/main/java/com/ifengxue/rpc/client/async/AsyncRpcInvoker.java)执行方法调用
 ## 即将实现的功能
 1. 服务端异步处理客户端请求
