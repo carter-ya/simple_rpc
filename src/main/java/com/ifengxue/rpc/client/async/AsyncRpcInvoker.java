@@ -25,7 +25,7 @@ public class AsyncRpcInvoker {
         try {
             callable.call();
         } catch (Exception e) {
-            throwRuntimeExceptionIfNeeded(e);
+            throwRuntimeException(e);
         }
         return future;
     }
@@ -40,11 +40,11 @@ public class AsyncRpcInvoker {
         try {
             callable.call();
         } catch (Exception e) {
-            throwRuntimeExceptionIfNeeded(e);
+            throwRuntimeException(e);
         }
     }
 
-    private static void throwRuntimeExceptionIfNeeded(Exception e) {
+    private static void throwRuntimeException(Exception e) {
         if (e instanceof InvocationTargetException) {
             e = (Exception) e.getCause();
         }
