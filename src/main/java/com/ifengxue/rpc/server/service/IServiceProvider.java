@@ -9,13 +9,15 @@ import java.util.Map;
  */
 public interface IServiceProvider {
     /**
-     * 返回所有声称对外提供服务的对象
+     * 返回所有声称对外提供服务的对象 <br>
+     * key:接口的完整名称;value:接口的对应实现
      * @return
      */
     Map<String, Object> findAllServices();
 
     /**
-     * 返回所有声称对外提供服务的代理Class对象
+     * 返回所有声称对外提供服务的代理Class对象<br>
+     * key:接口的完整名称;value:接口的对应代理类
      * @return
      */
     Map<String, Class<?>> findAllProxyClass();

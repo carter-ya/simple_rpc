@@ -16,4 +16,16 @@ public @interface RpcService {
      * @return
      */
     Class<?> value();
+
+    /**
+     * json-rpc中的服务访问路径
+     * @return
+     */
+    String service() default "";
+
+    /**
+     * json-rpc中对服务的整体描述
+     * @return
+     */
+    String description() default "";
 }

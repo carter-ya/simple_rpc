@@ -17,6 +17,12 @@ public enum SerializerTypeEnum {
         public ISerializer getSerializer() {
             return new KryoSerializer();
         }
+    },
+    JSON_RPC_SERIALIZER(Byte.valueOf("2"), "json-rpc") {
+        @Override
+        public ISerializer getSerializer() {
+            return null;
+        }
     };
     private final byte type;
     private final String name;

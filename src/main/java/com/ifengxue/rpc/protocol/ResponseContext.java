@@ -45,12 +45,9 @@ public class ResponseContext {
         this.requestContext = requestContext;
         try {
             requestClass = Class.forName(requestContext.getRequestProtocol().getClassName());
-            requestMethod = serviceProvider.findAllProxyClass().get(requestContext.getRequestProtocol().getClassName()).getMethod(requestContext.getRequestProtocol().getMethodName(), requestContext.getRequestProtocol().getParameterTypes());
-//            if (requestContext.getRequestProtocol().getMethodName().equals("$echo")) {
-//                requestMethod = $echoMethod;
-//            } else {
-//                requestMethod = requestClass.getMethod(requestContext.getRequestProtocol().getMethodName(), requestContext.getRequestProtocol().getParameterTypes());
-//            }
+            requestMethod = serviceProvider.findAllProxyClass().get(requestContext.getRequestProtocol().getClassName())
+                    .getMethod(requestContext.getRequestProtocol().getMethodName(),
+                    requestContext.getRequestProtocol().getParameterTypes());
         } catch (Exception e) {
             throw new ProtocolException("请求的服务或方法不存在:" + e.getMessage(), e);
         }

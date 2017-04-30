@@ -1,18 +1,27 @@
 package com.ifengxue.rpc.server;
 
+import com.ifengxue.rpc.protocol.json.JSONRequestDecoder;
 import com.ifengxue.rpc.server.factory.ServerConfigFactory;
 import com.ifengxue.rpc.protocol.RequestProtocolDecoder;
 import com.ifengxue.rpc.protocol.ResponseProtocolEncoder;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 默认实现的RPC服务器
@@ -26,11 +35,17 @@ public class SimpleRpcServer implements IRpcServer {
     @Override
     public void start() {
         ServerConfigFactory configFactory = ServerConfigFactory.getInstance();
+        List<Server> servers = new ArrayList<>();
         logger.info("Service name:{}", configFactory.getServiceName());
-        String host = configFactory.getBindHost();
-        logger.info("Service bind host:{}", host);
-        int port = configFactory.getBindPort();
-        logger.info("Service bind port:{}", port);
+        logger.info("Service bind host:{}", configFactory.getBindHost());
+        logger.info("Service bind port:{}", configFactory.getBindPort());
+        servers.add(new Server(configFactory.getBindHost(), configFactory.getBindPort()));
+
+        if (configFactory.getEnableJSONRpc()) {
+            logger.info("Service json-rpc bind host:{}", configFactory.getJSONRpcBindHost());
+            logger.info("Service json-prc bind port:{}", configFactory.getJSONRpcBindPort());
+            servers.add(new Server(configFactory.getJSONRpcBindHost(), configFactory.getJSONRpcBindPort()));
+        }
 
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
@@ -40,15 +55,28 @@ public class SimpleRpcServer implements IRpcServer {
             .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
-                    ch.pipeline()
-                            .addLast(new LoggingHandler())
-                            .addLast(new RequestProtocolDecoder())
-                            .addLast(new ResponseProtocolEncoder())
-                            .addLast(new ServerRequestProtocolHandler());
+                    boolean enableJSONRpc = ServerConfigFactory.getInstance().getEnableJSONRpc();
+                    int jsonRpcBindPort = ServerConfigFactory.getInstance().getJSONRpcBindPort();
+                    int currentChannelPort = ((InetSocketAddress) ch.pipeline().channel().localAddress()).getPort();
+                    if (enableJSONRpc && jsonRpcBindPort == currentChannelPort) {
+                        ch.pipeline()
+                                .addLast(new LoggingHandler())
+                                .addLast(new HttpServerCodec())
+                                .addLast(new JSONRequestDecoder());
+                    } else {
+                        ch.pipeline()
+                                .addLast(new LoggingHandler())
+                                .addLast(new RequestProtocolDecoder())
+                                .addLast(new ResponseProtocolEncoder())
+                                .addLast(new ServerRequestProtocolHandler());
+                    }
                 }
             });
         try {
-            ChannelFuture channelFuture = bootstrap.bind(host, port).sync();
+            for (Server server : servers) {
+                Channel channel = bootstrap.bind(server.host, server.port).sync().channel();
+                logger.info("Service has opened at:{}:{}", server.host, server.port);
+            }
             logger.info("{} start success!", configFactory.getServiceName());
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -61,5 +89,13 @@ public class SimpleRpcServer implements IRpcServer {
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
         logger.info("{} close success.", ServerConfigFactory.getInstance().getServiceName());
+    }
+    private class Server {
+        String host;
+        int port;
+        public Server(String host, int port) {
+            this.host = host;
+            this.port = port;
+        }
     }
 }

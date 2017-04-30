@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by LiuKeFeng on 2017-04-24.
  */
-@RpcService(IDemoService.class)
+@RpcService(value = IDemoService.class, description = "演示服务")
 public class DemoService implements IDemoService {
     Logger logger = LoggerFactory.getLogger(getClass());
     @Override

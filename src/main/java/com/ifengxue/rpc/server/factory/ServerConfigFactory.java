@@ -30,6 +30,12 @@ public class ServerConfigFactory {
     private static final String DEFAULT_SERVER_SERVICE_BIND_HOST = "localhost";
     private static final String SERVER_SERVICE_BIND_PORT = "server.service.bind.port";
     private static final String DEFAULT_SERVER_SERVICE_BIND_PORT = "9091";
+    private static final String SERVER_JSON_RPC_SERVICE_BIND_HOST = "server.json.rpc.service.bind.host";
+    private static final String DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_HOST = "localhost";
+    private static final String SERVER_JSON_RPC_SERVICE_BIND_PORT = "server.json.rpc.service.bind.port";
+    private static final String DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_PORT = "9092";
+    private static final String SERVER_JSON_RPC_ENABLE = "server.json.rpc.enable";
+    private static final String DEFAULT_SERVER_JSON_RPC_ENABLE = "true";
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerConfigFactory.class);
     private static volatile boolean isInitial;
     private static Properties serviceProperties = new Properties();
@@ -60,6 +66,12 @@ public class ServerConfigFactory {
                 serviceProperties.setProperty(SERVER_SERVICE_NAME, serverElement.attributeValue("name", DEFAULT_SERVER_SERVICE_NAME));
                 serviceProperties.setProperty(SERVER_SERVICE_BIND_HOST, serverElement.attributeValue("host", DEFAULT_SERVER_SERVICE_BIND_HOST));
                 serviceProperties.setProperty(SERVER_SERVICE_BIND_PORT, serverElement.attributeValue("port", DEFAULT_SERVER_SERVICE_BIND_PORT));
+            }
+            Element jsonRpcServerElement = rootElement.element("json-rpc-server");
+            if (jsonRpcServerElement != null) {
+                serviceProperties.setProperty(SERVER_JSON_RPC_SERVICE_BIND_HOST, serverElement.attributeValue("host", DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_HOST));
+                serviceProperties.setProperty(SERVER_JSON_RPC_SERVICE_BIND_PORT, serverElement.attributeValue("port", DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_PORT));
+                serviceProperties.setProperty(SERVER_JSON_RPC_ENABLE, serverElement.attributeValue("enable", DEFAULT_SERVER_JSON_RPC_ENABLE));
             }
             //初始化对外提供的服务实现类
             Element serviceElement = rootElement.element("services");
@@ -124,5 +136,19 @@ public class ServerConfigFactory {
     public int getBindPort() {
         return Integer.parseInt(
                 serviceProperties.getProperty(SERVER_SERVICE_BIND_PORT, DEFAULT_SERVER_SERVICE_BIND_PORT));
+    }
+
+    public boolean getEnableJSONRpc() {
+        return Boolean.parseBoolean(serviceProperties.getProperty(SERVER_JSON_RPC_ENABLE, DEFAULT_SERVER_JSON_RPC_ENABLE));
+    }
+
+    public String getJSONRpcBindHost() {
+        return serviceProperties.getProperty(
+                SERVER_JSON_RPC_SERVICE_BIND_HOST, DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_HOST);
+    }
+
+    public int getJSONRpcBindPort() {
+        return Integer.parseInt(
+                serviceProperties.getProperty(SERVER_JSON_RPC_SERVICE_BIND_PORT, DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_PORT));
     }
 }
