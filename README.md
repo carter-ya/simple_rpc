@@ -5,5 +5,6 @@
 2. 每个接口自动实现回声测试接口[IEchoService](https://github.com/liukefeng2008/simple_rpc/blob/master/src/main/java/com/ifengxue/rpc/protocol/IEchoService.java)
 3. 支持客户端异步调用
 > 通过[AsyncRpcInvoker](https://github.com/liukefeng2008/simple_rpc/blob/master/src/main/java/com/ifengxue/rpc/client/async/AsyncRpcInvoker.java)执行方法调用
+4. 部分实现了`json-rpc`功能[SimpleJSONRequestDispatcher](https://github.com/liukefeng2008/simple_rpc/blob/master/src/main/java/com/ifengxue/rpc/server/json/SimpleJSONRequestDispatcher.java)
 ## 即将实现的功能
 1. 服务端异步处理客户端请求
