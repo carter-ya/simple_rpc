@@ -69,9 +69,9 @@ public class ServerConfigFactory {
             }
             Element jsonRpcServerElement = rootElement.element("json-rpc-server");
             if (jsonRpcServerElement != null) {
-                serviceProperties.setProperty(SERVER_JSON_RPC_SERVICE_BIND_HOST, serverElement.attributeValue("host", DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_HOST));
-                serviceProperties.setProperty(SERVER_JSON_RPC_SERVICE_BIND_PORT, serverElement.attributeValue("port", DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_PORT));
-                serviceProperties.setProperty(SERVER_JSON_RPC_ENABLE, serverElement.attributeValue("enable", DEFAULT_SERVER_JSON_RPC_ENABLE));
+                serviceProperties.setProperty(SERVER_JSON_RPC_SERVICE_BIND_HOST, jsonRpcServerElement.attributeValue("host", DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_HOST));
+                serviceProperties.setProperty(SERVER_JSON_RPC_SERVICE_BIND_PORT, jsonRpcServerElement.attributeValue("port", DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_PORT));
+                serviceProperties.setProperty(SERVER_JSON_RPC_ENABLE, jsonRpcServerElement.attributeValue("enable", DEFAULT_SERVER_JSON_RPC_ENABLE));
             }
             //初始化对外提供的服务实现类
             Element serviceElement = rootElement.element("services");
