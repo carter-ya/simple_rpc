@@ -1,6 +1,5 @@
 package com.ifengxue.rpc.client.factory;
 
-import com.ifengxue.rpc.client.async.AsyncMethod;
 import com.ifengxue.rpc.client.pool.ChannelPoolConfig;
 import com.ifengxue.rpc.client.pool.IChannelPool;
 import com.ifengxue.rpc.client.pool.SimpleChannelPool;
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  *
