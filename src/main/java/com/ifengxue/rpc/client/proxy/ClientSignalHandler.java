@@ -11,9 +11,11 @@ import sun.misc.Signal;
  */
 public class ClientSignalHandler implements sun.misc.SignalHandler {
     private Logger logger = LoggerFactory.getLogger(getClass());
+    private static volatile boolean isClosed = false;
     @Override
     public void handle(Signal signal) {
-        if (signal.getName().equals("TERM")) {
+        if (signal.getName().equals("TERM") && !isClosed) {
+            isClosed = true;
             //关闭连接池
             logger.info("开始关闭Socket连接池...");
             ClientConfigFactory.getInstance().getChannelPool().close();

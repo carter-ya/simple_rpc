@@ -22,5 +22,9 @@ public class ServerApp {
 
         //响应退出信号
         sun.misc.Signal.handle(new sun.misc.Signal("TERM"), new ServerSignalHandler(rpcServer));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            ServerSignalHandler serverSignalHandler = new ServerSignalHandler(rpcServer);
+            serverSignalHandler.handle(new sun.misc.Signal("TERM"));
+        }));
     }
 }

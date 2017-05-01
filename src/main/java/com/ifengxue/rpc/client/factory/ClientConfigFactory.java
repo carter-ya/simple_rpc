@@ -79,6 +79,10 @@ public class ClientConfigFactory {
 
         //注册信号处理器
         sun.misc.Signal.handle(new sun.misc.Signal("TERM"), new ClientSignalHandler());
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            ClientSignalHandler clientSignalHandler = new ClientSignalHandler();
+            clientSignalHandler.handle(new sun.misc.Signal("TERM"));
+        }));
     }
 
     public static ClientConfigFactory getInstance() {

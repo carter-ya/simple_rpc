@@ -10,6 +10,7 @@ import sun.misc.Signal;
  */
 public class ServerSignalHandler implements sun.misc.SignalHandler {
     private final IRpcServer rpcServer;
+    private static volatile boolean isClosed = false;
 
     public ServerSignalHandler(IRpcServer rpcServer) {
         this.rpcServer = rpcServer;
@@ -17,7 +18,8 @@ public class ServerSignalHandler implements sun.misc.SignalHandler {
 
     @Override
     public void handle(Signal signal) {
-        if (signal.getName().equals("TERM")) {
+        if (signal.getName().equals("TERM") && !isClosed) {
+            isClosed = true;
             rpcServer.close();
         }
     }
