@@ -72,6 +72,7 @@ public class SimpleBaseKeyedPooledChannelFactory extends BaseKeyedPooledObjectFa
     public PooledObject<Channel> wrap(Channel value) {
         return new DefaultPooledObject<>(value);
     }
+
     @Override
     public void destroyObject(String key, PooledObject<Channel> p) throws Exception {
         InetSocketAddress inetSocketAddress = (InetSocketAddress) p.getObject().localAddress();

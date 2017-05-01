@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ProxyFactory {
     private static final Map<Class<?>, Object> CACHED_SERVICE_PROXY_MAP = new ConcurrentHashMap<>();
+    private static volatile sun.misc.SignalHandler signalHandler = new ClientSignalHandler();
 
     /**
      * 创建服务代理

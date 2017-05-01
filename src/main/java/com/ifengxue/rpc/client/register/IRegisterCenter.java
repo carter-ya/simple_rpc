@@ -28,6 +28,13 @@ public interface IRegisterCenter {
     List<ServiceNode> listAvailableServiceNode(String serviceNodeName) throws NoSuchElementException;
 
     /**
+     * 关闭注册中心
+     */
+    default void close() {
+
+    }
+
+    /**
      * 初始化注册中心
      * @param registerCenterElement 注册中心配置节点
      */

@@ -7,6 +7,7 @@ import com.ifengxue.rpc.demo.ValidateBean;
 import com.ifengxue.rpc.client.factory.ClientConfigFactory;
 import com.ifengxue.rpc.protocol.IEchoService;
 import org.apache.log4j.PropertyConfigurator;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -88,5 +89,11 @@ public class ProxyFactoryTest {
     public void testOnlyInvoke() throws InterruptedException {
         AsyncRpcInvoker.asyncForNoneResult(() -> demoService.waitForMe(5));
         TimeUnit.SECONDS.sleep(10);
+    }
+
+    @AfterClass
+    public static void close() {
+        ClientConfigFactory.getInstance().getChannelPool().close();
+        ClientConfigFactory.getInstance().getRegisterCenter().close();
     }
 }

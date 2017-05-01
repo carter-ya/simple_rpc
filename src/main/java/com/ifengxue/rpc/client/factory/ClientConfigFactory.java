@@ -3,6 +3,7 @@ package com.ifengxue.rpc.client.factory;
 import com.ifengxue.rpc.client.pool.ChannelPoolConfig;
 import com.ifengxue.rpc.client.pool.IChannelPool;
 import com.ifengxue.rpc.client.pool.SimpleChannelPool;
+import com.ifengxue.rpc.client.proxy.ClientSignalHandler;
 import com.ifengxue.rpc.client.register.IRegisterCenter;
 import com.ifengxue.rpc.protocol.enums.CompressTypeEnum;
 import com.ifengxue.rpc.protocol.enums.SerializerTypeEnum;
@@ -75,6 +76,9 @@ public class ClientConfigFactory {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        //注册信号处理器
+        sun.misc.Signal.handle(new sun.misc.Signal("TERM"), new ClientSignalHandler());
     }
 
     public static ClientConfigFactory getInstance() {
