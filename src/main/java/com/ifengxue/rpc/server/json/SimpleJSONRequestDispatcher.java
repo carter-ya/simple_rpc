@@ -16,6 +16,7 @@ import com.ifengxue.rpc.protocol.json.JSONRpcMethod;
 import com.ifengxue.rpc.server.factory.ServerConfigFactory;
 import com.ifengxue.rpc.server.handle.IInvokeHandler;
 import com.ifengxue.rpc.server.service.IServiceProvider;
+import com.ifengxue.rpc.server.util.JSONAnnotationUtil;
 import com.ifengxue.rpc.util.JSONParamConverter;
 
 import java.lang.reflect.InvocationTargetException;
@@ -69,7 +70,7 @@ public class SimpleJSONRequestDispatcher implements IJSONRequestDispatcher {
         String methodName = requestProtocol.getMethod();
         List<Method> matchedMethodList = serviceMethodListMap.get(requestProtocol.getService())
                 .stream()
-                .filter(m -> Optional.ofNullable(m.getAnnotation(HttpMethod.class)).map(HttpMethod::value).orElse(m.getName()).equals(methodName))
+                .filter(m -> JSONAnnotationUtil.getJSONMethodName(m, m.getName()).equals(methodName))
                 .filter(m -> m.getParameterTypes().length == paramSize)
                 .collect(Collectors.toList());
         if (matchedMethodList.isEmpty()) {
@@ -85,8 +86,7 @@ public class SimpleJSONRequestDispatcher implements IJSONRequestDispatcher {
             for (Method method : matchedMethodList) {
                 Parameter[] parameters = method.getParameters();
                 Set<String> methodArgumentNames = Arrays.stream(parameters)
-                        .map(parameter -> Optional.ofNullable(parameter.getAnnotation(Param.class)).map(Param::value)
-                                .orElse(parameter.getName()))
+                        .map(parameter -> JSONAnnotationUtil.getJSONMethodParamName(parameter, parameter.getName()))
                         .collect(Collectors.toSet());
                 if (methodArgumentNames.containsAll(argumentNames)) {
                     matchedMethod = method;
@@ -110,7 +110,7 @@ public class SimpleJSONRequestDispatcher implements IJSONRequestDispatcher {
                 Parameter parameter = parameters[i];
                 Class<?> classType = classTypes[i];
                 String paramString = paramJSONObject.getString(
-                        Optional.ofNullable(parameter.getAnnotation(Param.class)).map(Param::value).orElse(parameter.getName()));
+                        JSONAnnotationUtil.getJSONMethodParamName(parameter, parameter.getName()));
                 if (paramString == null) {
                     return new JSONResponseProtocol(null,
                             new JSONRpcError(JSONRpcError.INVALID_PARAMS, JSONRpcError.INVALID_PARAMS_MESSAGE,
@@ -214,8 +214,8 @@ public class SimpleJSONRequestDispatcher implements IJSONRequestDispatcher {
      */
     private JSONRpcMethod convertMethod2JSONRpcMethod(Method method) {
         JSONRpcMethod jsonRpcMethod = new JSONRpcMethod();
-        jsonRpcMethod.setMethod(Optional.ofNullable(method.getAnnotation(HttpMethod.class)).map(HttpMethod::value).orElse(method.getName()));
-        jsonRpcMethod.setDescription(Optional.ofNullable(method.getAnnotation(HttpMethod.class)).map(HttpMethod::value).orElse(""));
+        jsonRpcMethod.setMethod(JSONAnnotationUtil.getJSONMethodName(method, method.getName()));
+        jsonRpcMethod.setDescription(JSONAnnotationUtil.getJSONMethodDescription(method, ""));
         Class<?>[] parameterTypes = method.getParameterTypes();
         Parameter[] parameters = method.getParameters();
         List<JSONRpcMethod.Param> params = new ArrayList<>(parameters.length);
@@ -223,7 +223,7 @@ public class SimpleJSONRequestDispatcher implements IJSONRequestDispatcher {
             Parameter parameter = parameters[i];
             Class<?> classType = parameterTypes[i];
             JSONRpcMethod.Param param = new JSONRpcMethod.Param();
-            param.setParamName(Optional.ofNullable(parameter.getAnnotation(Param.class)).map(Param::value).orElse(parameter.getName()));
+            param.setParamName(JSONAnnotationUtil.getJSONMethodParamName(parameter, parameter.getName()));
             param.setParamType(classType.getSimpleName());
             params.add(param);
         }
