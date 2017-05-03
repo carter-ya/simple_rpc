@@ -36,11 +36,13 @@ public class ServerConfigFactory {
     private static final String DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_PORT = "9092";
     private static final String SERVER_JSON_RPC_ENABLE = "server.json.rpc.enable";
     private static final String DEFAULT_SERVER_JSON_RPC_ENABLE = "true";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerConfigFactory.class);
     private static volatile boolean isInitial;
     private static Properties serviceProperties = new Properties();
     private static List<String> classNames = new ArrayList<>();
     private static List<Interceptor> interceptors = new ArrayList<>();
+    private static IRegisterCenter registerCenter;
     private volatile IServiceProvider serviceProvider;
     private ServerConfigFactory() {}
     public static ServerConfigFactory getInstance() {
@@ -92,7 +94,7 @@ public class ServerConfigFactory {
             //初始化注册中心
             Element registerCenterElement = rootElement.element("register-center");
             if (registerCenterElement != null) {
-                IRegisterCenter registerCenter = (IRegisterCenter) Class.forName(registerCenterElement.attributeValue("class")).newInstance();
+                registerCenter = (IRegisterCenter) Class.forName(registerCenterElement.attributeValue("class")).newInstance();
                 registerCenter.init(registerCenterElement);
                 registerCenter.register(serviceProperties.getProperty(
                         SERVER_SERVICE_NAME, DEFAULT_SERVER_SERVICE_NAME),
@@ -119,6 +121,10 @@ public class ServerConfigFactory {
             }
         }
         return serviceProvider;
+    }
+
+    public IRegisterCenter getRegisterCenter() {
+        return registerCenter;
     }
 
     public IInvokeHandler getInvokeHandler() {

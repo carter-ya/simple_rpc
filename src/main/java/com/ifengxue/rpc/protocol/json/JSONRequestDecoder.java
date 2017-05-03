@@ -61,6 +61,7 @@ public class JSONRequestDecoder extends ChannelInboundHandlerAdapter {
         httpResponse.headers().set(HttpHeaders.Names.CONTENT_TYPE, "application/json;charset=utf-8");
         httpResponse.headers().set(HttpHeaders.Names.CONTENT_LENGTH, httpResponse.content().readableBytes());
         ctx.writeAndFlush(httpResponse);
+        ctx.channel().close();
     }
 
     @Override

@@ -1,7 +1,11 @@
 package com.ifengxue.rpc.server.handle;
 
 import com.ifengxue.rpc.server.IRpcServer;
+import com.ifengxue.rpc.server.factory.ServerConfigFactory;
+import com.ifengxue.rpc.server.register.IRegisterCenter;
 import sun.misc.Signal;
+
+import java.util.Optional;
 
 /**
  * 服务端退出信号响应
@@ -21,6 +25,7 @@ public class ServerSignalHandler implements sun.misc.SignalHandler {
         if (signal.getName().equals("TERM") && !isClosed) {
             isClosed = true;
             rpcServer.close();
+            Optional.ofNullable(ServerConfigFactory.getInstance().getRegisterCenter()).ifPresent(IRegisterCenter::close);
         }
     }
 }

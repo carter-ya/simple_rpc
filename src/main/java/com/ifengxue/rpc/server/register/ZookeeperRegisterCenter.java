@@ -28,7 +28,6 @@ public class ZookeeperRegisterCenter implements IRegisterCenter {
         String producerPath = ProtocolConsts.ZOOKEEPER_SERVICE_ROOT_PATH + serviceName + "/" + ProtocolConsts.ZOOKEEPER_SERVICE_PRODUCER_PATH;
         logger.info("开始注册服务:" + serviceName);
         try {
-            //TODO:实现服务的注册
             curatorFramework.create().creatingParentContainersIfNeeded().forPath(producerPath);
             serviceFullPath = producerPath + "/" + host + ":" + port;
             curatorFramework.create().withMode(CreateMode.EPHEMERAL).forPath(serviceFullPath);
@@ -58,5 +57,11 @@ public class ZookeeperRegisterCenter implements IRegisterCenter {
                         Integer.parseInt(propertyMap.getOrDefault("maxRetries", "3"))));
         curatorFramework.start();
         logger.info("服务端已连接注册中心:" + connectionString);
+    }
+
+    @Override
+    public void close() {
+        logger.info("关闭zookeeper连接");
+        curatorFramework.close();
     }
 }
