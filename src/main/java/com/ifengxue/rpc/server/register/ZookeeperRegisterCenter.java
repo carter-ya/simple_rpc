@@ -25,7 +25,7 @@ public class ZookeeperRegisterCenter implements IRegisterCenter {
     private String serviceFullPath;
     @Override
     public void register(String serviceName, String host, int port) {
-        String producerPath = ProtocolConsts.ZOOKEEPER_SERVICE_ROOT_PATH + serviceName + "/" + ProtocolConsts.ZOOKEEPER_SERVICE_PRODUCER_PATH;
+        String producerPath = ProtocolConsts.ZOOKEEPER_SERVICE_ROOT_PATH + "/" + serviceName;
         logger.info("开始注册服务:" + serviceName);
         try {
             curatorFramework.create().creatingParentContainersIfNeeded().forPath(producerPath);
