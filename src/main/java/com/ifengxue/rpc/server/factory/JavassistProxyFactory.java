@@ -39,8 +39,6 @@ public class JavassistProxyFactory {
                 CtClass ctClass = CLASS_POOL.get(clazzKey.getName());
                 ctClass.addInterface(CLASS_POOL.get(IEchoService.class.getName()));
                 ctClass.addMethod(CtMethod.make("public String $echo(String echo) {return echo;}", ctClass));
-//                ctClass.addInterface(CLASS_POOL.get(IInvokeProxyService.class.getName()));
-//                ctClass.addMethod(createInvokeProxyMethod(clazzKey, ctClass));
                 if (Boolean.getBoolean("rpc.debug")) {
                     new File("debug/proxy_class").mkdirs();
                     LOGGER.debug("写出代理类到debug/proxy_class");

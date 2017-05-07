@@ -33,7 +33,7 @@ public class ClassUtil {
      * @param annotationType 指定的注解
      * @return
      */
-    public static List<Class> findAllClassWithAnnotatedBy(List<Class<?>> classes, Class<? extends Annotation> annotationType) {
+    public static List<Class<?>> findAllClassWithAnnotatedBy(List<Class<?>> classes, Class<? extends Annotation> annotationType) {
         return classes.stream().filter(clazz -> clazz.getAnnotation(annotationType) != null).collect(Collectors.toList());
     }
 }
