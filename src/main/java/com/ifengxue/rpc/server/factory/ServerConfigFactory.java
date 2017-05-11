@@ -43,7 +43,7 @@ public class ServerConfigFactory {
     private static List<String> classNames = new ArrayList<>();
     private static List<Interceptor> interceptors = new ArrayList<>();
     private static IRegisterCenter registerCenter;
-    private volatile IServiceProvider serviceProvider;
+    private static IServiceProvider serviceProvider;
     private ServerConfigFactory() {}
     public static ServerConfigFactory getInstance() {
         return INSTANCE;
@@ -53,7 +53,7 @@ public class ServerConfigFactory {
      *  初始化配置工厂
      * @param config 配置文件的位置
      */
-    public static synchronized void initConfigFactory(String config) {
+    public static synchronized void initConfig(String config) {
         if (isInitial) {
             throw new IllegalStateException("服务端已经完成初始化！");
         }
@@ -75,12 +75,22 @@ public class ServerConfigFactory {
                 serviceProperties.setProperty(SERVER_JSON_RPC_SERVICE_BIND_PORT, jsonRpcServerElement.attributeValue("port", DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_PORT));
                 serviceProperties.setProperty(SERVER_JSON_RPC_ENABLE, jsonRpcServerElement.attributeValue("enable", DEFAULT_SERVER_JSON_RPC_ENABLE));
             }
+
             //初始化对外提供的服务实现类
             Element serviceElement = rootElement.element("services");
             List<Element> serviceElements = serviceElement.elements("service");
             for (Element element : serviceElements) {
                 classNames.add(element.attributeValue("class"));
             }
+            String serviceProviderClassName = serviceElement.attributeValue("providerClass", XmlServiceProvider.class.getName());
+            Class<IServiceProvider> serviceProviderClass = (Class<IServiceProvider>) Class.forName(serviceProviderClassName);
+            //XmlServiceProvider特殊处理
+            if (serviceProviderClass.equals(XmlServiceProvider.class)) {
+                serviceProvider = new XmlServiceProvider(classNames);
+            } else {
+                serviceProvider = serviceProviderClass.newInstance();
+            }
+
             //初始化拦截器
             Element interceptorsElement = rootElement.element("interceptors");
             if (interceptorsElement != null) {
@@ -113,13 +123,6 @@ public class ServerConfigFactory {
     }
 
     public IServiceProvider getServiceProvider() {
-        if (serviceProvider == null) {
-            synchronized (this) {
-                if (serviceProvider == null) {
-                    serviceProvider = new XmlServiceProvider(new ArrayList<>(classNames));
-                }
-            }
-        }
         return serviceProvider;
     }
 

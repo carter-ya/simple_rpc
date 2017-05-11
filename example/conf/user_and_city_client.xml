@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rpc-client>
+    <!-- 服务生产者注册中心：xml配置注册中心 -->
+    <register-center class="com.ifengxue.rpc.client.register.XmlRegisterCenter">
+        <!-- 配置HelloWorldService的服务地址 -->
+        <service-nodes>
+            <service-node serviceName="UserAndCityService" host="localhost" port="9091"  />
+        </service-nodes>
+    </register-center>
+</rpc-client>

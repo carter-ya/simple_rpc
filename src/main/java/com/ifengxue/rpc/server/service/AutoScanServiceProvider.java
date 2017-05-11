@@ -22,7 +22,9 @@ public class AutoScanServiceProvider implements IServiceProvider {
 
     public AutoScanServiceProvider() {
         String classpath = System.getProperty("rpc.service.classpath");
-        String[] jarPaths = System.getProperty("rpc.service.jarpaths", "").split(",");
+        String[] jarPaths = Optional.ofNullable(System.getProperty("rpc.service.jarpaths"))
+                .map(s -> s.split(","))
+                .orElse(new String[0]);
         autoScan(classpath, jarPaths);
     }
 

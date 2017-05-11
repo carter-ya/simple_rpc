@@ -16,7 +16,7 @@ public class ServerApp {
     public static void main(String[] args) {
         Map<String, String> paramMap = ParamHelper.parse(args,
                 new Param("conf", "conf/rpc_server.xml", false, "服务端配置文件路径"));
-        ServerConfigFactory.initConfigFactory(paramMap.get("conf"));
+        ServerConfigFactory.initConfig(paramMap.get("conf"));
         IRpcServer rpcServer = new SimpleRpcServer();
         rpcServer.start();
 

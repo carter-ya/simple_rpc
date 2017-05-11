@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * 异常通讯协议
@@ -56,7 +57,18 @@ public class ExceptionProtocol implements Serializable {
      * @return
      */
     public RemoteException asRemoteException() {
-        RemoteException remoteException = new RemoteException("Exception cause by remote service:" + message);
+        StringBuilder remoteExceptionContentBuilder = new StringBuilder("Exception cause by remote service");
+        remoteExceptionContentBuilder.append(Optional.ofNullable(message).map(s -> ":" + s).orElse("."));
+        remoteExceptionContentBuilder.append("\n\t==========Remote Stack Trace Begin==========");
+        for (InnerStackTraceElement innerStackTraceElement : innerStackTraceElements) {
+            remoteExceptionContentBuilder.append("\n\tat ")
+                    .append(innerStackTraceElement.declaringClass)
+                    .append(".").append(innerStackTraceElement.methodName)
+                    .append("(").append(innerStackTraceElement.fileName).append(":")
+                    .append(innerStackTraceElement.lineNumber).append(")");
+        }
+        remoteExceptionContentBuilder.append("\n\t==========Remote Stack Trace End==========");
+        RemoteException remoteException = new RemoteException(remoteExceptionContentBuilder.toString());
         return remoteException;
     }
 

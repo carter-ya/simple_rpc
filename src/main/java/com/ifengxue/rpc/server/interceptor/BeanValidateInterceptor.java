@@ -42,6 +42,9 @@ public class BeanValidateInterceptor implements Interceptor {
         }
 
         for (Object param : params) {
+            if (param == null) {
+                continue;
+            }
             Set<ConstraintViolation<Object>> violationSet = validator.validate(param);
             if (!violationSet.isEmpty()) {
                 Map<String, String> illegalArgumentMap = new HashMap<>(violationSet.size());

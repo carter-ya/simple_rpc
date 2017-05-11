@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rpc-server>
     <server name="rpc_service" host="localhost" port="9091" />
-    <services>
+    <services providerClass="com.ifengxue.rpc.server.service.XmlServiceProvider">
         <service class="" />
     </services>
     <register-center class="com.ifengxue.rpc.server.register.ZookeeperRegisterCenter">
