@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rpc-server>
-    <!-- rpc服务名称为HelloWorldService;监听localhost的9091端口 -->
+    <!-- rpc服务名称为UserAndCityService;监听localhost的9091端口 -->
     <server name="UserAndCityService" host="localhost" port="9091" />
     <!-- 不启用 json-rpc -->
     <json-rpc-server enable="false" />
-    <!-- 自动扫描服务实现 -->
+    <!-- 启用自动扫描服务 -->
     <services providerClass="com.ifengxue.rpc.server.service.AutoScanServiceProvider" />
     <!-- 注册Bean验证拦截器 -->
     <interceptors>

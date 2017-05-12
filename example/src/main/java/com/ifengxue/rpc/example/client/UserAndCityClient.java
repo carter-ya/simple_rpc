@@ -35,7 +35,7 @@ public class UserAndCityClient {
         City city = new City();
         city.setCityName("北京");
         /**
-         * 待返回值调用服务
+         * 带返回值调用服务
          */
         int cityID = cityService.addCity(city);
         System.out.println("北京:" + cityID);

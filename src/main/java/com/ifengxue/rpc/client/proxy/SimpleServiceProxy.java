@@ -11,6 +11,7 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -29,7 +30,7 @@ public class SimpleServiceProxy extends AbstractServiceProxy {
     }
 
     @Override
-    protected Object invoke(Object proxy, RequestProtocol requestProtocol) throws Throwable {
+    protected Object invoke(Object proxy, Method invokeMethod, RequestProtocol requestProtocol) throws Throwable {
         Exception exception = sendRequestProtocol(requestProtocol);
         // 抛出本地异常
         if (exception != null) {
@@ -43,7 +44,43 @@ public class SimpleServiceProxy extends AbstractServiceProxy {
             AsyncConsts.ASYNC_RPC_FUTURE_THREAD_LOCAL.remove();
             AsyncConsts.ASYNC_RPC_FUTURE_SESSION_ID_MAP
                     .put(requestProtocol.getSessionID(), callback);
-            return null;
+
+            Class<?> returnTypeClass = invokeMethod.getReturnType();
+            /**
+             * 基本数据类型返回值，如果返回null,会有NPE问题
+             */
+            if (returnTypeClass.isPrimitive()) {
+                if (returnTypeClass == void.class) {
+                    return null;
+                }
+                if (returnTypeClass == boolean.class) {
+                    return false;
+                }
+                if (returnTypeClass == byte.class) {
+                    return Byte.valueOf("0");
+                }
+                if (returnTypeClass == short.class) {
+                    return Short.valueOf("0");
+                }
+                if (returnTypeClass == char.class) {
+                    return Character.valueOf((char) 0);
+                }
+                if (returnTypeClass == int.class) {
+                    return Integer.valueOf("0");
+                }
+                if (returnTypeClass == long.class) {
+                    return Long.valueOf("0");
+                }
+                if (returnTypeClass == float.class) {
+                    return Float.valueOf("0");
+                }
+                if (returnTypeClass == double.class) {
+                    return Double.valueOf("0");
+                }
+                throw new IllegalStateException("不期望的返回值类型:" + returnTypeClass.getName());
+            } else {
+                return null;
+            }
         }
         return RpcInvokeHelper.blockGetResult(requestProtocol.getSessionID(), readTimeout);
     }

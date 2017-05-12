@@ -30,7 +30,7 @@ public abstract class AbstractServiceProxy implements IServiceProxy {
         if (method.getName().equals("equals") && args != null && args.length == 1) {
             return equalsProxy(proxy, args[0]);
         }
-        return invoke(proxy, RequestProtocol.Builder
+        return invoke(proxy, method, RequestProtocol.Builder
                 .newBuilder()
                 .setRequestProtocolTypeEnum(RequestProtocolTypeEnum.METHOD_INVOKE)
                 .setClassName(interfaceClass.getName())
@@ -45,7 +45,7 @@ public abstract class AbstractServiceProxy implements IServiceProxy {
      * @throws ConnectException 连接被拒绝异常
      * @throws Throwable 其他错误
      */
-    protected abstract Object invoke(Object proxy, RequestProtocol requestProtocol) throws ConnectException, Throwable;
+    protected abstract Object invoke(Object proxy, Method invokeMethod, RequestProtocol requestProtocol) throws ConnectException, Throwable;
 
     @Override
     public Class<?> getInterfaceClass() {
