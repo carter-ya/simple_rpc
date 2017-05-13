@@ -1,3 +1,7 @@
 /*.iml
 /.idea
 /target
+/log
+/debug
+/example/target
+/example/*.iml

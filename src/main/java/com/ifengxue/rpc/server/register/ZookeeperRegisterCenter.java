@@ -28,9 +28,8 @@ public class ZookeeperRegisterCenter implements IRegisterCenter {
         String producerPath = ProtocolConsts.ZOOKEEPER_SERVICE_ROOT_PATH + "/" + serviceName;
         logger.info("开始注册服务:" + serviceName);
         try {
-            curatorFramework.create().creatingParentContainersIfNeeded().forPath(producerPath);
             serviceFullPath = producerPath + "/" + host + ":" + port;
-            curatorFramework.create().withMode(CreateMode.EPHEMERAL).forPath(serviceFullPath);
+            curatorFramework.create().creatingParentContainersIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(serviceFullPath);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

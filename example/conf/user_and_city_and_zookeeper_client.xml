@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rpc-client>
+    <!-- zookeeper注册中心 -->
+    <register-center class="com.ifengxue.rpc.client.register.ZookeeperRegisterCenter">
+        <property name="connectionString" value="localhost:2181" />
+        <property name="baseSleepTimeMS" value="1000" />
+        <property name="maxRetries" value="3" />
+    </register-center>
+</rpc-client>

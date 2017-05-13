@@ -1,14 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rpc-server>
+    <!--
+        tcp服务
+        name:当前服务的名称
+        host:绑定的ip地址
+        port:监听的端口
+     -->
     <server name="rpc_service" host="localhost" port="9091" />
+    <!--
+        json-rpc服务
+        host:绑定的ip地址
+        port:监听的端口
+        enable:是否启用json-rpc
+     -->
+    <json-rpc-server host="localhost" port="9092" enable="false" />
+    <!--
+        providerClsss:用于提供注册服务的实现。目前支持XmlServiceProvider和AutoScanServiceProvider
+     -->
     <services providerClass="com.ifengxue.rpc.server.service.XmlServiceProvider">
+        <!--
+            如果选择XmlServiceProvider作为实现，则需要service节点，class属性是使用了RpcService注解的类
+         -->
         <service class="" />
     </services>
+    <!--
+        注册中心：如果不使用zookeeper作为注册中心，则可以没有该节点
+     -->
     <register-center class="com.ifengxue.rpc.server.register.ZookeeperRegisterCenter">
         <property name="connectionString" value="localhost:2181" />
         <property name="baseSleepTimeMS" value="1000" />
         <property name="maxRetries" value="3" />
     </register-center>
+    <!--
+        拦截器列表：如果不使用拦截器，则可以没有该节点
+     -->
     <interceptors>
         <interceptor class="com.ifengxue.rpc.server.interceptor.BeanValidateInterceptor" />
     </interceptors>

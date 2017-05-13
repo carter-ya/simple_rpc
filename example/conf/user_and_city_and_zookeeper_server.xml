@@ -4,6 +4,12 @@
     <server name="UserAndCityService" host="localhost" port="9091" />
     <!-- 启用自动扫描服务 -->
     <services providerClass="com.ifengxue.rpc.server.service.AutoScanServiceProvider" />
+    <!-- zookeeper注册中心 -->
+    <register-center class="com.ifengxue.rpc.server.register.ZookeeperRegisterCenter">
+        <property name="connectionString" value="localhost:2181" />
+        <property name="baseSleepTimeMS" value="1000" />
+        <property name="maxRetries" value="3" />
+    </register-center>
     <!-- 注册Bean验证拦截器 -->
     <interceptors>
         <interceptor class="com.ifengxue.rpc.server.interceptor.BeanValidateInterceptor" />

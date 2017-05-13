@@ -35,7 +35,7 @@ public class ServerConfigFactory {
     private static final String SERVER_JSON_RPC_SERVICE_BIND_PORT = "server.json.rpc.service.bind.port";
     private static final String DEFAULT_SERVER_JSON_RPC_SERVICE_BIND_PORT = "9092";
     private static final String SERVER_JSON_RPC_ENABLE = "server.json.rpc.enable";
-    private static final String DEFAULT_SERVER_JSON_RPC_ENABLE = "true";
+    private static final String DEFAULT_SERVER_JSON_RPC_ENABLE = "false";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerConfigFactory.class);
     private static volatile boolean isInitial;
@@ -148,7 +148,8 @@ public class ServerConfigFactory {
     }
 
     public boolean getEnableJSONRpc() {
-        return Boolean.parseBoolean(serviceProperties.getProperty(SERVER_JSON_RPC_ENABLE, DEFAULT_SERVER_JSON_RPC_ENABLE));
+        return Boolean.parseBoolean(
+                serviceProperties.getProperty(SERVER_JSON_RPC_ENABLE, DEFAULT_SERVER_JSON_RPC_ENABLE));
     }
 
     public String getJSONRpcBindHost() {

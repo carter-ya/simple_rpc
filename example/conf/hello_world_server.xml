@@ -2,8 +2,6 @@
 <rpc-server>
     <!-- rpc服务名称为HelloWorldService;监听localhost的9091端口 -->
     <server name="HelloWorldService" host="localhost" port="9091" />
-    <!-- 不启用 json-rpc -->
-    <json-rpc-server enable="false" />
     <!-- 对外提供服务的实现类列表 -->
     <services>
         <!-- 实现类的完整名称:包名.类名 -->

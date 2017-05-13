@@ -9,7 +9,7 @@ public interface IEchoService {
     /**
      * 回声测试
      * @param echo 回声
-     * @return 原阳返回
+     * @return 原样返回
      */
     String $echo(String echo);
 }
