@@ -13,5 +13,6 @@
     <!-- 注册Bean验证拦截器 -->
     <interceptors>
         <interceptor class="com.ifengxue.rpc.server.interceptor.BeanValidateInterceptor" />
+        <interceptor class="com.ifengxue.rpc.server.interceptor.LoggingInterceptor" />
     </interceptors>
 </rpc-server>
