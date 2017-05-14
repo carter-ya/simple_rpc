@@ -53,8 +53,8 @@ public class MethodInvokeHandler implements IInvokeHandler {
             }
         }
 
-        // 执行后置拦截器
-        if (responseContext.getInvokeResult() == null && responseContext.getResponseError() == null) {
+        // 执行后置拦截器(只要没有异常就调用后置拦截器)
+        if (responseContext.getResponseError() == null) {
             invokeInterceptors(responseContext, afterInterceptors, Interceptor.InterceptorTypeEnum.AFTER);
         }
 

@@ -9,6 +9,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -54,6 +55,10 @@ public class RequestProtocolDecoder extends LengthFieldBasedFrameDecoder {
         ctx.channel().close();
         if (cause instanceof InvocationTargetException) {
             cause = cause.getCause();
+        }
+        if ((cause instanceof IOException) && cause.getMessage().equals("远程主机强迫关闭了一个现有的连接。")) {
+            logger.warn("客户端关闭了Socket:" + cause.getMessage());
+            return;
         }
         logger.error("请求协议解码失败:" + cause.getMessage(), cause);
     }
