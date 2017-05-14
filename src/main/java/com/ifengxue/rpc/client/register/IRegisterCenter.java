@@ -40,7 +40,7 @@ public interface IRegisterCenter {
      */
     void init(Element registerCenterElement);
     /** 服务节点 */
-    class ServiceNode {
+    class ServiceNode implements Comparable<ServiceNode> {
         /** 节点名称 */
         private final String serviceNodeName;
         /** 节点的地址 */
@@ -93,6 +93,13 @@ public interface IRegisterCenter {
                     ", host='" + host + '\'' +
                     ", port=" + port +
                     '}';
+        }
+
+        @Override
+        public int compareTo(ServiceNode o) {
+            String thisStr = "tcp://" + serviceNodeName + "/" + host + ":" + port;
+            String otherStr = "tcp://" + o.getServiceNodeName() + "/" + o.getHost() + ":" + o.getPort();
+            return thisStr.compareTo(otherStr);
         }
     }
 }

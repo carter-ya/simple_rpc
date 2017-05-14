@@ -21,6 +21,7 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 默认实现的连接池
@@ -31,6 +32,7 @@ public class SimpleBaseKeyedPooledChannelFactory extends BaseKeyedPooledObjectFa
     private final IRegisterCenter registerCenter;
     private final ChannelPoolConfig channelPoolConfig = ClientConfigFactory.getInstance().getChannelPoolConfig();
     private Logger logger = LoggerFactory.getLogger(getClass());
+    private static final AtomicInteger THREAD_SEQUENCE = new AtomicInteger(0);
     private static final Map<Channel, EventLoopGroup> CACHED_EVENT_LOOP_GROUP = new ConcurrentHashMap<>();
 
     public SimpleBaseKeyedPooledChannelFactory(IRegisterCenter registerCenter) {
@@ -41,7 +43,7 @@ public class SimpleBaseKeyedPooledChannelFactory extends BaseKeyedPooledObjectFa
     public Channel create(String key) throws Exception {
         IRegisterCenter.ServiceNode serviceNode = registerCenter.getAvailableServiceNode(key);
         Bootstrap bootstrap = new Bootstrap();
-        EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
+        EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1, r -> new Thread(r,"RpcClientIOThread-" + THREAD_SEQUENCE.incrementAndGet()));
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {

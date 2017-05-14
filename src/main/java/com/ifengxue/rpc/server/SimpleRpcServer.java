@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 默认实现的RPC服务器
@@ -29,6 +30,8 @@ import java.util.Map;
  * Created by LiuKeFeng on 2017-04-23.
  */
 public class SimpleRpcServer implements IRpcServer {
+    private static final AtomicInteger BOSS_THREAD_SEQUENCE = new AtomicInteger(0);
+    private static final AtomicInteger WORKER_THREAD_SEQUENCE  = new AtomicInteger(0);
     private Logger logger = LoggerFactory.getLogger(getClass());
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
@@ -47,8 +50,10 @@ public class SimpleRpcServer implements IRpcServer {
             servers.add(new Server(configFactory.getJSONRpcBindHost(), configFactory.getJSONRpcBindPort()));
         }
 
-        bossGroup = new NioEventLoopGroup();
-        workerGroup = new NioEventLoopGroup();
+        bossGroup = new NioEventLoopGroup(0,
+                r -> new Thread(r, "RpcServerBossGroup-" + BOSS_THREAD_SEQUENCE.incrementAndGet()));
+        workerGroup = new NioEventLoopGroup(0,
+                r -> new Thread(r, "RpcServerWorkerGroup-" + WORKER_THREAD_SEQUENCE.incrementAndGet()));
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup)
             .channel(NioServerSocketChannel.class)
