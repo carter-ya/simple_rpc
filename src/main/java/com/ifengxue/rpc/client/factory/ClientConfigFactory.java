@@ -1,5 +1,7 @@
 package com.ifengxue.rpc.client.factory;
 
+import com.ifengxue.rpc.client.async.AsyncConfig;
+import com.ifengxue.rpc.client.async.IAsyncConfig;
 import com.ifengxue.rpc.client.pool.ChannelPoolConfig;
 import com.ifengxue.rpc.client.pool.IChannelPool;
 import com.ifengxue.rpc.client.pool.SimpleChannelPool;
@@ -150,5 +152,13 @@ public class ClientConfigFactory {
         genericKeyedObjectPoolConfig.setTestOnBorrow(channelPoolConfig.isTestOnBorrow());
         genericKeyedObjectPoolConfig.setMaxWaitMillis(channelPoolConfig.getMaxWaitTimeout());
         return genericKeyedObjectPoolConfig;
+    }
+
+    /**
+     * 获取异步配置对象
+     * @return
+     */
+    public IAsyncConfig getAsyncConfig() {
+        return new AsyncConfig();
     }
 }

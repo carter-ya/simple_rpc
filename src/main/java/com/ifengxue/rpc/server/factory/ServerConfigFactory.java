@@ -1,5 +1,7 @@
 package com.ifengxue.rpc.server.factory;
 
+import com.ifengxue.rpc.client.async.AsyncConfig;
+import com.ifengxue.rpc.client.async.IAsyncConfig;
 import com.ifengxue.rpc.server.handle.IInvokeHandler;
 import com.ifengxue.rpc.server.handle.MethodInvokeHandler;
 import com.ifengxue.rpc.server.interceptor.Interceptor;
