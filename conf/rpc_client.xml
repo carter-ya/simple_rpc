@@ -36,4 +36,9 @@
         minCompressFrameLength:当帧的长度>=该值则自动压缩(前提是compress值不是uncompress)
     -->
     <protocol serialize="kryo"  compress="deflater" minCompressFrameLength="3145728"/>
+    <!-- 异步方法调用配置参数 -->
+    <async-config class="com.ifengxue.rpc.client.async.AsyncConfig">
+        <!-- 调用Future.get()方法的最大等待时长 -->
+        <property name="maxWaitTimeMillis" value="10000" />
+    </async-config>
 </rpc-client>
