@@ -1,6 +1,9 @@
 package com.ifengxue.rpc.client.async;
 
+import com.ifengxue.rpc.client.RpcContext;
+import com.ifengxue.rpc.client.factory.ClientConfigFactory;
 import com.ifengxue.rpc.protocol.ResponseProtocol;
+import com.ifengxue.rpc.server.factory.ServerConfigFactory;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.*;
@@ -10,6 +13,7 @@ import java.util.concurrent.*;
  */
 public class AsyncRpcFuture<V> implements Future, IAsyncCallback {
     private CountDownLatch countDownLatch = new CountDownLatch(1);
+    private IAsyncConfig asyncConfig = ClientConfigFactory.getInstance().getAsyncConfig();
     private ResponseProtocol responseProtocol;
     private AsyncMethod asyncMethod;
     private String sessionID;
@@ -30,7 +34,12 @@ public class AsyncRpcFuture<V> implements Future, IAsyncCallback {
 
     @Override
     public V get() throws InterruptedException, ExecutionException {
-        countDownLatch.await();
+        countDownLatch.await(asyncConfig.getMaxWaitTimeMillis(), TimeUnit.MILLISECONDS);
+        if (responseProtocol == null) {
+            RpcContext.CACHED_RESPONSE_PROTOCOL_MAP.remove(sessionID);
+            throw new ExecutionException(
+                    new TimeoutException("在" + asyncConfig.getMaxWaitTimeMillis() + "ms内没有接收到结果！"));
+        }
         throwExecutionExceptionIfNeeded();
         return (V) responseProtocol.getInvokeResult();
     }

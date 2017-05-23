@@ -1,5 +1,7 @@
 package com.ifengxue.rpc.client.factory;
 
+import com.ifengxue.rpc.client.async.AsyncConfig;
+import com.ifengxue.rpc.client.async.IAsyncConfig;
 import com.ifengxue.rpc.client.pool.ChannelPoolConfig;
 import com.ifengxue.rpc.client.pool.IChannelPool;
 import com.ifengxue.rpc.client.pool.SimpleChannelPool;
@@ -35,6 +37,7 @@ public class ClientConfigFactory {
     private static volatile boolean isInitial = false;
     private static IRegisterCenter registerCenter;
     private static ChannelPoolConfig channelPoolConfig = new ChannelPoolConfig();
+    private static IAsyncConfig asyncConfig = new AsyncConfig();
     private static Properties protocolProperties = new Properties();
     private ClientConfigFactory() {}
 
@@ -59,9 +62,9 @@ public class ClientConfigFactory {
             if (socketPoolElement != null) {
                 List<Element> propertyElements = socketPoolElement.elements("property");
                 for (Element propertyElement : propertyElements) {
-                    String propertyName = propertyElement.attributeValue("name");
-                    String propertyValue = propertyElement.attributeValue("value");
-                    BeanUtils.setProperty(channelPoolConfig, propertyName, propertyValue);
+                    BeanUtils.setProperty(channelPoolConfig,
+                            propertyElement.attributeValue("name"),
+                            propertyElement.attributeValue("value"));
                 }
                 LOGGER.info("初始化连接池配置信息成功...");
             }
@@ -72,6 +75,19 @@ public class ClientConfigFactory {
                 protocolElement.attributeValue(COMPRESS_TYPE_KEY, DEFAULT_COMPRESS_TYPE);
                 protocolElement.attributeValue(MIN_COMPRESS_FRAME_LENGTH_KEY, DEFAULT_MIN_COMPRESS_FRAME_LENGTH);
                 LOGGER.info("初始化协议成功...");
+            }
+            //初始化异步配置
+            Element asyncConfigElement = rootElement.element("async-config");
+            if (asyncConfigElement != null) {
+                String asyncConfigClassName = asyncConfigElement.attributeValue("class", AsyncConfig.class.getName());
+                Class<IAsyncConfig> asyncConfigClass = (Class<IAsyncConfig>) Class.forName(asyncConfigClassName);
+                asyncConfig = asyncConfigClass.newInstance();
+                List<Element> propertyElements = asyncConfigElement.elements("property");
+                for (Element propertyElement : propertyElements) {
+                    BeanUtils.setProperty(asyncConfig,
+                            propertyElement.attributeValue("name"),
+                            propertyElement.attributeValue("value"));
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -150,5 +166,13 @@ public class ClientConfigFactory {
         genericKeyedObjectPoolConfig.setTestOnBorrow(channelPoolConfig.isTestOnBorrow());
         genericKeyedObjectPoolConfig.setMaxWaitMillis(channelPoolConfig.getMaxWaitTimeout());
         return genericKeyedObjectPoolConfig;
+    }
+
+    /**
+     * 获取异步配置对象
+     * @return
+     */
+    public IAsyncConfig getAsyncConfig() {
+        return new AsyncConfig();
     }
 }
