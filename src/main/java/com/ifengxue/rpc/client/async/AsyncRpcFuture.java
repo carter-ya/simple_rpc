@@ -3,7 +3,6 @@ package com.ifengxue.rpc.client.async;
 import com.ifengxue.rpc.client.RpcContext;
 import com.ifengxue.rpc.client.factory.ClientConfigFactory;
 import com.ifengxue.rpc.protocol.ResponseProtocol;
-import com.ifengxue.rpc.server.factory.ServerConfigFactory;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.*;
